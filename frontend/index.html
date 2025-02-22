@@ -15,6 +15,19 @@
             min-height: 100vh;
             margin: 0;
             overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
         .logo-animation {
             animation: float 6s ease-in-out infinite;
@@ -41,7 +54,7 @@
     </style>
 </head>
 <body class="flex flex-col items-center justify-center p-4">
-    <div class="max-w-xl w-full space-y-8">
+    <div class="max-w-xl w-full space-y-8 relative z-20">
         <!-- Logo -->
         <div class="logo-animation">
             <svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg" class="w-full h-24">
@@ -106,6 +119,18 @@
                     >
                         Search
                     </button>
+                </div>
+            </div>
+
+            <!-- Questionnaire Container -->
+            <div id="questionnaire-container" class="hidden space-y-6 mt-8 relative z-20">
+                <div id="question-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 relative">
+                    <h2 id="question-text" class="text-2xl font-bold text-white text-center"></h2>
+                    <div id="options-container" class="space-y-4"></div>
+                    <div class="flex justify-between mt-6">
+                        <button id="prev-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out hidden">Previous</button>
+                        <button id="next-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out">Next</button>
+                    </div>
                 </div>
             </div>
         </div>
