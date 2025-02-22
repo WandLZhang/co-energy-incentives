@@ -45,18 +45,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(data => {
-            // Create or get the map image element
-            let mapImage = document.getElementById('map-image');
-            if (!mapImage) {
-                mapImage = document.createElement('img');
-                mapImage.id = 'map-image';
-                mapImage.className = 'mt-4 rounded-lg shadow-lg w-full max-w-2xl mx-auto';
-                // Find the main content container
-                const container = document.querySelector('.max-w-xl');
-                container.appendChild(mapImage);
-            }
-            // Update the map image
-            mapImage.src = data.mapImage;
+            // Create a temporary image to preload
+            const tempImage = new Image();
+            tempImage.onload = () => {
+                // Once image is loaded, apply it as background with a fade effect
+                document.body.style.transition = 'background-image 0.5s ease-in-out';
+                document.body.style.backgroundImage = `url(${data.mapImage})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
+                
+                // Add or update the overlay
+                let overlay = document.getElementById('map-overlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'map-overlay';
+                    overlay.className = 'fixed inset-0 bg-white bg-opacity-80 -z-10 transition-opacity duration-500';
+                    document.body.appendChild(overlay);
+                    // Small delay to ensure smooth fade in
+                    requestAnimationFrame(() => overlay.style.opacity = '1');
+                }
+            };
+            tempImage.src = data.mapImage;
         })
         .catch(error => {
             console.error('Error:', error);
