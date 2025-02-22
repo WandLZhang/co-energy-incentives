@@ -74,7 +74,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6">
+        <div id="initial-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6">
             <h1 class="text-3xl font-bold text-white text-center">
                 Let's help you find rebates
             </h1>
@@ -123,8 +123,8 @@
             </div>
 
             <!-- Questionnaire Container -->
-            <div id="questionnaire-container" class="hidden space-y-6 mt-8 relative z-20">
-                <div id="question-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 relative">
+            <div id="questionnaire-container" class="hidden space-y-6 mt-8 fixed inset-0 flex items-center justify-center z-30">
+                <div id="question-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 max-w-xl w-full mx-4">
                     <h2 id="question-text" class="text-2xl font-bold text-white text-center"></h2>
                     <div id="options-container" class="space-y-4"></div>
                     <div class="flex justify-between mt-6">
@@ -136,6 +136,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
