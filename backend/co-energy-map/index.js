@@ -32,7 +32,7 @@ app.post('/', async (req, res) => {
     console.log('[getMapData] Fetching map image for:', zipcode);
 
     // Get static map image from Google Maps API
-    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(zipcode)}&zoom=13&size=800x600&maptype=roadmap&key=${process.env.MAPS_API_KEY}`;
+    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(zipcode)}&zoom=14&size=1920x1080&maptype=satellite&key=${process.env.MAPS_API_KEY}`;
 
     // Download map image
     const response = await fetch(mapUrl);

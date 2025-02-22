@@ -30,12 +30,43 @@ document.addEventListener('DOMContentLoaded', () => {
             </svg>
         `;
 
-        // TODO: Add API call here
-        // For now, just simulate a delay
-        setTimeout(() => {
+        // Make API call to Cloud Function
+        fetch('https://us-central1-gemini-med-lit-review.cloudfunctions.net/getMapImage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ zipcode: zip })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Create or get the map image element
+            let mapImage = document.getElementById('map-image');
+            if (!mapImage) {
+                mapImage = document.createElement('img');
+                mapImage.id = 'map-image';
+                mapImage.className = 'mt-4 rounded-lg shadow-lg w-full max-w-2xl mx-auto';
+                // Find the main content container
+                const container = document.querySelector('.max-w-xl');
+                container.appendChild(mapImage);
+            }
+            // Update the map image
+            mapImage.src = data.mapImage;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load map. Please try again.');
+        })
+        .finally(() => {
+            // Reset button state
             searchButton.disabled = false;
             searchButton.textContent = 'Search';
-        }, 1000);
+        });
     };
 
     // Handle button click
