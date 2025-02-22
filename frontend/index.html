@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO Energy Rebate Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1f35 0%, #2d3748 100%);
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .logo-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .input-animation {
+            transition: all 0.3s ease;
+        }
+        .input-animation:focus {
+            transform: scale(1.02);
+        }
+        .mountain-animation {
+            animation: mountainGlow 4s ease-in-out infinite;
+        }
+        @keyframes mountainGlow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+            100% { filter: brightness(1); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+    <div class="max-w-xl w-full space-y-8">
+        <!-- Logo -->
+        <div class="logo-animation">
+            <svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg" class="w-full h-24">
+                <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#4FD1C5"/>
+                        <stop offset="100%" style="stop-color:#68D391"/>
+                    </linearGradient>
+                </defs>
+                <path id="curve" d="M 50 80 Q 250 20 450 80" fill="none"/>
+                <text font-family="Poppins" font-size="60" font-weight="bold" text-anchor="middle">
+                    <textPath href="#curve" startOffset="50%" fill="url(#logoGradient)">
+                        Energy + $
+                    </textPath>
+                </text>
+            </svg>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6">
+            <h1 class="text-3xl font-bold text-white text-center">
+                Let's help you find rebates
+            </h1>
+
+            <!-- Mountain Illustration -->
+            <div class="mountain-animation">
+                <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-40">
+                    <defs>
+                        <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#63B3ED;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#4FD1C5;stop-opacity:0.8" />
+                        </linearGradient>
+                        <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#2D3748"/>
+                            <stop offset="100%" style="stop-color:#4A5568"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="400" height="200" fill="url(#skyGradient)" rx="8"/>
+                    <path d="M0 200 L150 50 L300 200" fill="url(#mountainGradient)"/>
+                    <path d="M100 200 L250 80 L400 200" fill="url(#mountainGradient)" opacity="0.8"/>
+                    <circle cx="150" cy="50" r="8" fill="white"/>
+                    <circle cx="250" cy="80" r="6" fill="white"/>
+                </svg>
+            </div>
+
+            <!-- Zip Code Input -->
+            <div class="space-y-4">
+                <label for="zipcode" class="block text-gray-300 text-lg font-medium text-center">
+                    Enter your zip code to start
+                </label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="zipcode" 
+                        name="zipcode" 
+                        class="input-animation w-full px-6 py-4 bg-white bg-opacity-20 border-2 border-teal-400 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-300 text-center text-xl"
+                        placeholder="e.g., 12345"
+                        maxlength="5"
+                    >
+                    <button 
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out"
+                    >
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
