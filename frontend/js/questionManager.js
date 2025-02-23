@@ -156,7 +156,6 @@ export function showQuestion(index) {
             
             questionText.textContent = currentQuestion.text;
             optionsContainer.innerHTML = '';
-            const questionCard = document.getElementById('question-card');
             
             // Configure layout based on question type
             if (currentQuestion.id === 'Q3') {
@@ -180,16 +179,38 @@ export function showQuestion(index) {
                 
                 // Add base classes
                 const baseClasses = [
-                    'text-left', 'bg-white', 'bg-opacity-20',
-                    'hover:bg-opacity-30', 'text-white', 'rounded-lg',
-                    'transition-all', 'duration-300', 'ease-in-out'
+                    'text-left',
+                    'transition-all',
+                    'duration-300',
+                    'ease-in-out',
+                    'mt-4'  // Added explicit margin-top
                 ];
                 
-                // Add specific classes based on question type
                 if (currentQuestion.id === 'Q3') {
-                    baseClasses.push('q3-option-button', 'text-xs', 'overflow-hidden', 'text-ellipsis');
+                    baseClasses.push(
+                        'q3-option-button',
+                        'text-sm',
+                        'font-medium',
+                        'break-words',
+                        'bg-white',
+                        'bg-opacity-20',
+                        'text-white'
+                    );
                 } else {
-                    baseClasses.push('px-4', 'py-3', 'text-base', 'min-h-[3rem]', 'w-full', 'flex', 'items-center');
+                    baseClasses.push(
+                        'px-4',
+                        'py-3',
+                        'text-base',
+                        'min-h-[3rem]',
+                        'w-full',
+                        'flex',
+                        'items-center',
+                        'bg-white',
+                        'bg-opacity-20',
+                        'hover:bg-opacity-30',
+                        'text-white',
+                        'rounded-lg'
+                    );
                 }
                 
                 button.classList.add(...baseClasses);
