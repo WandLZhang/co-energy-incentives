@@ -161,16 +161,16 @@ export function showQuestion(index) {
             // Configure layout based on question type
             if (currentQuestion.id === 'Q3') {
                 // Wide layout with small options for Q3
-                questionCard.classList.add('max-w-6xl');
+                questionCard.classList.add('max-w-7xl');
                 questionCard.classList.remove('max-w-xl');
-                optionsContainer.classList.add('grid', 'grid-cols-3', 'gap-2', 'px-1', 'mx-auto');
+                optionsContainer.classList.add('q3-options-grid');
                 optionsContainer.classList.remove('space-y-3');
             } else {
                 // Narrow layout with larger options for other questions
                 questionCard.classList.add('max-w-xl');
-                questionCard.classList.remove('max-w-6xl');
+                questionCard.classList.remove('max-w-7xl');
                 optionsContainer.classList.add('space-y-3', 'px-2');
-                optionsContainer.classList.remove('grid', 'grid-cols-3', 'gap-2');
+                optionsContainer.classList.remove('q3-options-grid');
             }
             
             currentQuestion.options.forEach(option => {
@@ -182,15 +182,14 @@ export function showQuestion(index) {
                 const baseClasses = [
                     'text-left', 'bg-white', 'bg-opacity-20',
                     'hover:bg-opacity-30', 'text-white', 'rounded-lg',
-                    'transition-all', 'duration-300', 'ease-in-out',
-                    'flex', 'items-center', 'w-full'
+                    'transition-all', 'duration-300', 'ease-in-out'
                 ];
                 
                 // Add specific classes based on question type
                 if (currentQuestion.id === 'Q3') {
-                    baseClasses.push('px-2', 'py-1.5', 'text-xs', 'min-h-[2rem]');
+                    baseClasses.push('q3-option-button', 'text-xs', 'overflow-hidden', 'text-ellipsis');
                 } else {
-                    baseClasses.push('px-4', 'py-3', 'text-base', 'min-h-[3rem]');
+                    baseClasses.push('px-4', 'py-3', 'text-base', 'min-h-[3rem]', 'w-full', 'flex', 'items-center');
                 }
                 
                 button.classList.add(...baseClasses);
