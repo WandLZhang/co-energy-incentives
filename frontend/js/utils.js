@@ -38,65 +38,33 @@ export function checkQuestionnaireVisibility() {
     const questionCard = document.getElementById('question-card');
     const questionText = document.getElementById('question-text');
     const optionsContainer = document.getElementById('options-container');
-    const initialCard = document.getElementById('initial-card');
 
     if (container && questionCard) {
         const containerStyles = getComputedStyle(container);
         const cardStyles = getComputedStyle(questionCard);
-        const containerRect = container.getBoundingClientRect();
         
         debugLog('[QUESTIONNAIRE] Container styles:', {
             display: containerStyles.display,
             visibility: containerStyles.visibility,
             opacity: containerStyles.opacity,
             position: containerStyles.position,
-            zIndex: containerStyles.zIndex,
-            transform: containerStyles.transform,
-            classes: container.className
-        });
-        
-        debugLog('[QUESTIONNAIRE] Container position:', {
-            top: containerRect.top,
-            left: containerRect.left,
-            width: containerRect.width,
-            height: containerRect.height,
-            inViewport: (
-                containerRect.top >= 0 &&
-                containerRect.left >= 0 &&
-                containerRect.bottom <= window.innerHeight &&
-                containerRect.right <= window.innerWidth
-            )
+            zIndex: containerStyles.zIndex
         });
         
         debugLog('[QUESTIONNAIRE] Question card styles:', {
             display: cardStyles.display,
             visibility: cardStyles.visibility,
-            opacity: cardStyles.opacity,
-            transform: cardStyles.transform,
-            classes: questionCard.className
+            opacity: cardStyles.opacity
         });
         
         if (questionText) {
-            debugLog('[QUESTIONNAIRE] Question text content:', {
-                text: questionText.textContent,
-                display: getComputedStyle(questionText).display,
-                visibility: getComputedStyle(questionText).visibility
-            });
+            debugLog('[QUESTIONNAIRE] Question text content:', questionText.textContent);
         }
         
         if (optionsContainer) {
             debugLog('[QUESTIONNAIRE] Options container:', {
                 childCount: optionsContainer.children.length,
-                display: getComputedStyle(optionsContainer).display,
-                visibility: getComputedStyle(optionsContainer).visibility
-            });
-        }
-
-        if (initialCard) {
-            debugLog('[QUESTIONNAIRE] Initial card state:', {
-                display: getComputedStyle(initialCard).display,
-                opacity: getComputedStyle(initialCard).opacity,
-                visibility: getComputedStyle(initialCard).visibility
+                display: getComputedStyle(optionsContainer).display
             });
         }
     } else {
@@ -116,15 +84,41 @@ export function updateOptionStyles(question, userResponses) {
         return;
     }
 
+    const currentResponse = userResponses[question.id];
+    debugLog('[QUESTIONNAIRE] Current response:', {
+        questionId: question.id,
+        response: currentResponse,
+        type: question.type
+    });
+
     const buttons = optionsContainer.querySelectorAll('button');
     buttons.forEach(button => {
-        const optionValue = button.textContent;
-        const responses = userResponses[question.id] || [];
+        const optionValue = button.dataset.value;
+        debugLog('[QUESTIONNAIRE] Processing button:', {
+            value: optionValue,
+            text: button.textContent,
+            currentClasses: button.className
+        });
         
+        let isSelected = false;
         if (question.type === 'single') {
-            button.classList.toggle('bg-teal-500', responses === optionValue);
+            isSelected = currentResponse === optionValue;
         } else {
-            button.classList.toggle('bg-teal-500', responses.includes(optionValue));
+            isSelected = Array.isArray(currentResponse) && currentResponse.includes(optionValue);
+        }
+        
+        debugLog('[QUESTIONNAIRE] Button selection state:', {
+            value: optionValue,
+            isSelected: isSelected,
+            type: question.type
+        });
+
+        if (isSelected) {
+            button.classList.add('bg-teal-500');
+            button.classList.remove('bg-white');
+        } else {
+            button.classList.remove('bg-teal-500');
+            button.classList.add('bg-white');
         }
     });
 }

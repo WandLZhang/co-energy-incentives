@@ -28,6 +28,7 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            opacity: 0.3; /* Reduce the opacity of the map background */
         }
         .logo-animation {
             animation: float 6s ease-in-out infinite;
@@ -53,9 +54,9 @@
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center p-4">
-    <div class="max-w-xl w-full space-y-8 relative z-20">
-        <!-- Logo -->
+<body>
+    <!-- Fixed Logo at Top -->
+    <div class="fixed top-4 left-1/2 transform -translate-x-1/2 w-full max-w-xl z-50">
         <div class="logo-animation">
             <svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg" class="w-full h-24">
                 <defs>
@@ -72,66 +73,72 @@
                 </text>
             </svg>
         </div>
+    </div>
 
-        <!-- Main Content -->
-        <div id="initial-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6">
-            <h1 class="text-3xl font-bold text-white text-center">
-                Let's help you find rebates
-            </h1>
+    <!-- Main Content -->
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-xl w-full space-y-8 relative z-20">
+            <!-- Initial Card -->
+            <div id="initial-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 mt-24">
+                <h1 class="text-3xl font-bold text-white text-center">
+                    Let's help you find rebates
+                </h1>
 
-            <!-- Mountain Illustration -->
-            <div class="mountain-animation">
-                <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-40">
-                    <defs>
-                        <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" style="stop-color:#63B3ED;stop-opacity:0.8" />
-                            <stop offset="100%" style="stop-color:#4FD1C5;stop-opacity:0.8" />
-                        </linearGradient>
-                        <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#2D3748"/>
-                            <stop offset="100%" style="stop-color:#4A5568"/>
-                        </linearGradient>
-                    </defs>
-                    <rect width="400" height="200" fill="url(#skyGradient)" rx="8"/>
-                    <path d="M0 200 L150 50 L300 200" fill="url(#mountainGradient)"/>
-                    <path d="M100 200 L250 80 L400 200" fill="url(#mountainGradient)" opacity="0.8"/>
-                    <circle cx="150" cy="50" r="8" fill="white"/>
-                    <circle cx="250" cy="80" r="6" fill="white"/>
-                </svg>
-            </div>
+                <!-- Mountain Illustration -->
+                <div class="mountain-animation">
+                    <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-40">
+                        <defs>
+                            <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#63B3ED;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#4FD1C5;stop-opacity:0.8" />
+                            </linearGradient>
+                            <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#2D3748"/>
+                                <stop offset="100%" style="stop-color:#4A5568"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="400" height="200" fill="url(#skyGradient)" rx="8"/>
+                        <path d="M0 200 L150 50 L300 200" fill="url(#mountainGradient)"/>
+                        <path d="M100 200 L250 80 L400 200" fill="url(#mountainGradient)" opacity="0.8"/>
+                        <circle cx="150" cy="50" r="8" fill="white"/>
+                        <circle cx="250" cy="80" r="6" fill="white"/>
+                    </svg>
+                </div>
 
-            <!-- Zip Code Input -->
-            <div class="space-y-4">
-                <label for="zipcode" class="block text-gray-300 text-lg font-medium text-center">
-                    Enter your zip code to start
-                </label>
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        id="zipcode" 
-                        name="zipcode" 
-                        class="input-animation w-full px-6 py-4 bg-white bg-opacity-20 border-2 border-teal-400 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-300 text-center text-xl"
-                        placeholder="e.g., 12345"
-                        maxlength="5"
-                    >
-                    <button 
-                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out"
-                    >
-                        Search
-                    </button>
+                <!-- Zip Code Input -->
+                <div class="space-y-4">
+                    <label for="zipcode" class="block text-gray-300 text-lg font-medium text-center">
+                        Enter your zip code to start
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="zipcode" 
+                            name="zipcode" 
+                            class="input-animation w-full px-6 py-4 bg-white bg-opacity-20 border-2 border-teal-400 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-300 text-center text-xl"
+                            placeholder="e.g., 80014"
+                            maxlength="5"
+                        >
+                        <button 
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out"
+                        >
+                            Search
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Questionnaire Container -->
-        <div id="questionnaire-container" class="hidden space-y-6 mt-8 fixed inset-0 flex items-center justify-center z-30">
-            <div id="question-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 max-w-xl w-full mx-4">
-                <h2 id="question-text" class="text-2xl font-bold text-white text-center"></h2>
-                <div id="options-container" class="space-y-4"></div>
-                <div class="flex justify-between mt-6">
-                    <button id="prev-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out hidden">Previous</button>
-                    <button id="next-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out">Next</button>
-                </div>
+    <!-- Questionnaire Container (Outside main content for proper z-indexing) -->
+    <div id="questionnaire-container" class="hidden fixed inset-0 flex items-center justify-center z-40">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div id="question-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 max-w-xl w-full mx-4 relative z-50">
+            <h2 id="question-text" class="text-2xl font-bold text-white text-center"></h2>
+            <div id="options-container" class="space-y-4"></div>
+            <div class="flex justify-between mt-6">
+                <button id="prev-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out hidden">Previous</button>
+                <button id="next-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out">Next</button>
             </div>
         </div>
     </div>

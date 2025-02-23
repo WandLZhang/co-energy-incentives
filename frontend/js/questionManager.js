@@ -77,21 +77,43 @@ export function finishQuestionnaire() {
 }
 
 export function selectOption(question, option) {
-    debugLog(`[QUESTIONNAIRE] Selecting option for question ${question.id}:`, option);
+    debugLog('[QUESTIONNAIRE] Selecting option:', {
+        questionId: question.id,
+        optionValue: option.value,
+        optionText: option.text,
+        questionType: question.type
+    });
+    
     if (question.type === 'single') {
         userResponses[question.id] = option.value;
+        debugLog('[QUESTIONNAIRE] Set single response:', {
+            questionId: question.id,
+            value: option.value
+        });
     } else {
-        userResponses[question.id] = userResponses[question.id] || [];
+        if (!userResponses[question.id]) {
+            userResponses[question.id] = [];
+        }
+        
         const index = userResponses[question.id].indexOf(option.value);
         if (index > -1) {
             userResponses[question.id].splice(index, 1);
+            debugLog('[QUESTIONNAIRE] Removed multi response:', {
+                questionId: question.id,
+                value: option.value,
+                remainingValues: userResponses[question.id]
+            });
         } else {
             userResponses[question.id].push(option.value);
+            debugLog('[QUESTIONNAIRE] Added multi response:', {
+                questionId: question.id,
+                value: option.value,
+                allValues: userResponses[question.id]
+            });
         }
     }
     
     updateOptionStyles(question, userResponses);
-    debugLog('[QUESTIONNAIRE] Updated user responses:', userResponses);
 }
 
 export function showQuestion(index) {
@@ -113,9 +135,12 @@ export function showQuestion(index) {
         return;
     }
 
-    debugLog('[QUESTIONNAIRE] Current question:', currentQuestion);
-    debugLog('[QUESTIONNAIRE] Container display:', getComputedStyle(questionnaireContainer).display);
-    debugLog('[QUESTIONNAIRE] Card display:', getComputedStyle(questionCard).display);
+    debugLog('[QUESTIONNAIRE] Current question:', {
+        id: currentQuestion.id,
+        text: currentQuestion.text,
+        type: currentQuestion.type,
+        optionsCount: currentQuestion.options.length
+    });
     
     // Fade out
     questionCard.style.opacity = '0';
@@ -135,6 +160,7 @@ export function showQuestion(index) {
             currentQuestion.options.forEach(option => {
                 const button = document.createElement('button');
                 button.textContent = option.text;
+                button.dataset.value = option.value;
                 button.classList.add(
                     'w-full', 'text-left', 'bg-white', 'bg-opacity-20',
                     'hover:bg-opacity-30', 'text-white', 'p-4', 'rounded-lg',
@@ -145,8 +171,10 @@ export function showQuestion(index) {
                 const responses = userResponses[currentQuestion.id] || [];
                 if (currentQuestion.type === 'single' && responses === option.value) {
                     button.classList.add('bg-teal-500');
+                    button.classList.remove('bg-white');
                 } else if (currentQuestion.type === 'multi' && responses.includes(option.value)) {
                     button.classList.add('bg-teal-500');
+                    button.classList.remove('bg-white');
                 }
                 
                 button.addEventListener('click', () => selectOption(currentQuestion, option));

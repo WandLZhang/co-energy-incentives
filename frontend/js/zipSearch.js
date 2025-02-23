@@ -139,6 +139,12 @@ function handleMapImageLoad(imageUrl) {
                 questionnaireContainer.style.display = 'flex';
                 questionnaireContainer.style.opacity = '0';
                 
+                // Ensure the question card starts transparent
+                const questionCard = document.getElementById('question-card');
+                if (questionCard) {
+                    questionCard.style.opacity = '0';
+                }
+                
                 // Small delay before fading in the questionnaire
                 setTimeout(() => {
                     debugLog('[QUESTIONNAIRE] Fading in questionnaire container');
@@ -149,6 +155,12 @@ function handleMapImageLoad(imageUrl) {
                     setTimeout(() => {
                         debugLog('[QUESTIONNAIRE] Setting up questionnaire navigation');
                         setupQuestionnaireNavigation();
+                        
+                        if (questionCard) {
+                            debugLog('[QUESTIONNAIRE] Fading in question card');
+                            questionCard.style.transition = 'opacity 0.3s ease-in-out';
+                            questionCard.style.opacity = '1';
+                        }
                         
                         debugLog('[QUESTIONNAIRE] Showing first question');
                         showQuestion(0);
