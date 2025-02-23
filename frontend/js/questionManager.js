@@ -7,24 +7,24 @@ export const userResponses = {};
 
 // Question management functions
 export function setupQuestionnaireNavigation() {
-    debugLog('Setting up questionnaire navigation');
+    debugLog('[QUESTIONNAIRE] Setting up navigation');
     const nextButton = document.getElementById('next-question');
     const prevButton = document.getElementById('prev-question');
     
     if (nextButton && prevButton) {
         nextButton.addEventListener('click', showNextQuestion);
         prevButton.addEventListener('click', showPreviousQuestion);
-        debugLog('Navigation buttons set up successfully');
+        debugLog('[QUESTIONNAIRE] Navigation buttons set up successfully');
     } else {
-        console.error('Navigation buttons not found during setup');
+        console.error('[QUESTIONNAIRE] Navigation buttons not found during setup');
     }
 }
 
 export function getCurrentQuestion(index) {
-    debugLog(`Getting question for index: ${index}`);
+    debugLog(`[QUESTIONNAIRE] Getting question for index: ${index}`);
     const baseQuestion = questions[index];
     if (!baseQuestion) {
-        debugLog('No base question found for index:', index);
+        debugLog('[QUESTIONNAIRE] No base question found for index:', index);
         return null;
     }
     
@@ -32,12 +32,12 @@ export function getCurrentQuestion(index) {
     for (const [key, conditionalQ] of Object.entries(conditionalQuestions)) {
         if (conditionalQ.showIf(userResponses) && 
             index > questions.findIndex(q => q.id === 'Q3')) {
-            debugLog('Found conditional question:', key);
+            debugLog('[QUESTIONNAIRE] Found conditional question:', key);
             return conditionalQ;
         }
     }
     
-    debugLog('Returning base question:', baseQuestion.id);
+    debugLog('[QUESTIONNAIRE] Returning base question:', baseQuestion.id);
     return baseQuestion;
 }
 
@@ -49,12 +49,12 @@ export function getQuestionCount() {
             count++;
         }
     }
-    debugLog('Total question count:', count);
+    debugLog('[QUESTIONNAIRE] Total question count:', count);
     return count;
 }
 
 export function showNextQuestion() {
-    debugLog('Next button clicked. Current index:', currentQuestionIndex);
+    debugLog('[QUESTIONNAIRE] Next button clicked. Current index:', currentQuestionIndex);
     if (currentQuestionIndex < getQuestionCount() - 1) {
         currentQuestionIndex++;
         showQuestion(currentQuestionIndex);
@@ -64,7 +64,7 @@ export function showNextQuestion() {
 }
 
 export function showPreviousQuestion() {
-    debugLog('Previous button clicked. Current index:', currentQuestionIndex);
+    debugLog('[QUESTIONNAIRE] Previous button clicked. Current index:', currentQuestionIndex);
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         showQuestion(currentQuestionIndex);
@@ -72,12 +72,12 @@ export function showPreviousQuestion() {
 }
 
 export function finishQuestionnaire() {
-    debugLog('Questionnaire completed. User responses:', userResponses);
+    debugLog('[QUESTIONNAIRE] Completed. User responses:', userResponses);
     alert('Questionnaire completed! Check console for responses.');
 }
 
 export function selectOption(question, option) {
-    debugLog(`Selecting option for question ${question.id}:`, option);
+    debugLog(`[QUESTIONNAIRE] Selecting option for question ${question.id}:`, option);
     if (question.type === 'single') {
         userResponses[question.id] = option.value;
     } else {
@@ -91,24 +91,31 @@ export function selectOption(question, option) {
     }
     
     updateOptionStyles(question, userResponses);
-    debugLog('Updated user responses:', userResponses);
+    debugLog('[QUESTIONNAIRE] Updated user responses:', userResponses);
 }
 
 export function showQuestion(index) {
-    debugLog(`Attempting to show question at index: ${index}`);
+    debugLog(`[QUESTIONNAIRE] Attempting to show question at index: ${index}`);
     const questionCard = document.getElementById('question-card');
-    if (!questionCard) {
-        console.error('Question card element not found');
+    const questionnaireContainer = document.getElementById('questionnaire-container');
+    
+    if (!questionCard || !questionnaireContainer) {
+        console.error('[QUESTIONNAIRE] Required elements not found:', {
+            questionCard: !!questionCard,
+            questionnaireContainer: !!questionnaireContainer
+        });
         return;
     }
 
     const currentQuestion = getCurrentQuestion(index);
     if (!currentQuestion) {
-        console.error('No question found for index:', index);
+        console.error('[QUESTIONNAIRE] No question found for index:', index);
         return;
     }
 
-    debugLog('Current question:', currentQuestion);
+    debugLog('[QUESTIONNAIRE] Current question:', currentQuestion);
+    debugLog('[QUESTIONNAIRE] Container display:', getComputedStyle(questionnaireContainer).display);
+    debugLog('[QUESTIONNAIRE] Card display:', getComputedStyle(questionCard).display);
     
     // Fade out
     questionCard.style.opacity = '0';
@@ -119,7 +126,7 @@ export function showQuestion(index) {
             const optionsContainer = document.getElementById('options-container');
             
             if (!questionText || !optionsContainer) {
-                throw new Error('Required question elements not found');
+                throw new Error('[QUESTIONNAIRE] Required question elements not found');
             }
             
             questionText.textContent = currentQuestion.text;
@@ -160,13 +167,16 @@ export function showQuestion(index) {
             
             // Fade in
             questionCard.style.opacity = '1';
-            debugLog('Question displayed successfully');
+            debugLog('[QUESTIONNAIRE] Question displayed successfully');
             
             // Check visibility after a short delay
-            setTimeout(checkQuestionnaireVisibility, 100);
+            setTimeout(() => {
+                debugLog('[QUESTIONNAIRE] Checking final visibility');
+                checkQuestionnaireVisibility();
+            }, 100);
             
         } catch (error) {
-            console.error('Error displaying question:', error);
+            console.error('[QUESTIONNAIRE] Error displaying question:', error);
         }
     }, 300);
 }

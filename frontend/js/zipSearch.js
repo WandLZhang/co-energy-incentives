@@ -6,11 +6,11 @@ export function initializeZipSearch() {
     const searchButton = document.querySelector('button');
     
     if (!zipInput || !searchButton) {
-        console.error('Required input elements not found');
+        console.error('[QUESTIONNAIRE] Required input elements not found');
         return;
     }
     
-    debugLog('Input elements found, setting up event listeners');
+    debugLog('[QUESTIONNAIRE] Input elements found, setting up event listeners');
     
     // Only allow numbers in zip code input
     zipInput.addEventListener('input', (e) => {
@@ -27,14 +27,14 @@ export function initializeZipSearch() {
         }
     });
 
-    debugLog('Event listeners set up successfully');
+    debugLog('[QUESTIONNAIRE] Event listeners set up successfully');
 }
 
 function handleSearch(zipInput, searchButton) {
-    debugLog('Starting zip code submission process');
+    debugLog('[QUESTIONNAIRE] Starting zip code submission process');
     const zip = zipInput.value.trim();
     if (zip.length !== 5) {
-        debugLog('Invalid zip code length');
+        debugLog('[QUESTIONNAIRE] Invalid zip code length');
         zipInput.classList.add('border-red-500', 'shake');
         setTimeout(() => {
             zipInput.classList.remove('shake');
@@ -42,7 +42,7 @@ function handleSearch(zipInput, searchButton) {
         return;
     }
     
-    debugLog('Valid zip code entered:', zip);
+    debugLog('[QUESTIONNAIRE] Valid zip code entered:', zip);
     
     // Remove error styling if present
     zipInput.classList.remove('border-red-500');
@@ -56,7 +56,7 @@ function handleSearch(zipInput, searchButton) {
         </svg>
     `;
 
-    debugLog('Making API call to Cloud Function');
+    debugLog('[QUESTIONNAIRE] Making API call to Cloud Function');
     fetch('https://us-central1-gemini-med-lit-review.cloudfunctions.net/getMapImage', {
         method: 'POST',
         headers: {
@@ -68,31 +68,32 @@ function handleSearch(zipInput, searchButton) {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        debugLog('API response received');
+        debugLog('[QUESTIONNAIRE] API response received');
         return response.json();
     })
     .then(data => {
-        debugLog('Map data received, loading image');
+        debugLog('[QUESTIONNAIRE] Map data received, loading image');
         handleMapImageLoad(data.mapImage);
     })
     .catch(error => {
-        console.error('Error:', error);
-        debugLog('Error occurred:', error.message);
+        console.error('[QUESTIONNAIRE] Error:', error);
+        debugLog('[QUESTIONNAIRE] Error occurred:', error.message);
         alert('Failed to load map. Please try again.');
     })
     .finally(() => {
         // Reset button state
         searchButton.disabled = false;
         searchButton.textContent = 'Search';
-        debugLog('Search button reset');
+        debugLog('[QUESTIONNAIRE] Search button reset');
     });
 }
 
 function handleMapImageLoad(imageUrl) {
+    debugLog('[QUESTIONNAIRE] Starting map image load process');
     // Create a temporary image to preload
     const tempImage = new Image();
     tempImage.onload = () => {
-        debugLog('Map image loaded successfully');
+        debugLog('[QUESTIONNAIRE] Map image loaded successfully');
         // Once image is loaded, apply it as background with a fade effect
         const style = document.createElement('style');
         style.textContent = `
@@ -111,13 +112,12 @@ function handleMapImageLoad(imageUrl) {
             overlay.id = 'map-overlay';
             overlay.className = 'fixed inset-0 bg-white bg-opacity-80 z-10 transition-opacity duration-500';
             document.body.appendChild(overlay);
-            debugLog('Map overlay created');
-            // Small delay to ensure smooth fade in
+            debugLog('[QUESTIONNAIRE] Map overlay created');
             requestAnimationFrame(() => overlay.style.opacity = '1');
         }
 
         // Fade out the initial card
-        debugLog('Fading out initial card');
+        debugLog('[QUESTIONNAIRE] Starting transition to questionnaire');
         const initialCard = document.getElementById('initial-card');
         if (initialCard) {
             initialCard.style.transition = 'opacity 0.3s ease-in-out';
@@ -125,32 +125,38 @@ function handleMapImageLoad(imageUrl) {
             
             setTimeout(() => {
                 initialCard.style.display = 'none';
-                debugLog('Initial card hidden');
+                debugLog('[QUESTIONNAIRE] Initial card hidden');
                 
                 // Show the questionnaire after map is loaded
                 const questionnaireContainer = document.getElementById('questionnaire-container');
                 if (!questionnaireContainer) {
-                    console.error('Questionnaire container not found');
+                    console.error('[QUESTIONNAIRE] Container not found');
                     return;
                 }
                 
-                debugLog('Showing questionnaire container');
+                debugLog('[QUESTIONNAIRE] Preparing questionnaire container');
                 questionnaireContainer.classList.remove('hidden');
+                questionnaireContainer.style.display = 'flex';
                 questionnaireContainer.style.opacity = '0';
                 
                 // Small delay before fading in the questionnaire
                 setTimeout(() => {
-                    debugLog('Fading in questionnaire');
+                    debugLog('[QUESTIONNAIRE] Fading in questionnaire container');
                     questionnaireContainer.style.transition = 'opacity 0.3s ease-in-out';
                     questionnaireContainer.style.opacity = '1';
                     
-                    // Start questionnaire
-                    showQuestion(0);
-                    setupQuestionnaireNavigation();
+                    // Additional delay before showing first question
+                    setTimeout(() => {
+                        debugLog('[QUESTIONNAIRE] Setting up questionnaire navigation');
+                        setupQuestionnaireNavigation();
+                        
+                        debugLog('[QUESTIONNAIRE] Showing first question');
+                        showQuestion(0);
+                    }, 200);
                 }, 100);
             }, 300);
         } else {
-            console.error('Initial card not found');
+            console.error('[QUESTIONNAIRE] Initial card not found');
         }
     };
     tempImage.src = imageUrl;
