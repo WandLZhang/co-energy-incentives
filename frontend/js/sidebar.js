@@ -51,7 +51,7 @@ export function showProgramDetails(program) {
     detailsDiv.innerHTML = `
         <h4 class="text-lg font-bold mb-2">${program.short_description_en}</h4>
         <p class="mb-1">ID: ${program.id}</p>
-        <p>Amount: $${program.amount.toLocaleString()}</p>
+        ${program.amount >= 5 ? `<p>Amount: $${program.amount.toLocaleString()}</p>` : ''}
     `;
     document.body.appendChild(detailsDiv);
     
