@@ -55,6 +55,25 @@ export function getQuestionCount() {
 
 export function showNextQuestion() {
     debugLog('[QUESTIONNAIRE] Next button clicked. Current index:', currentQuestionIndex);
+    
+    // Get current question
+    const currentQuestion = getCurrentQuestion(currentQuestionIndex);
+    if (!currentQuestion) return;
+    
+    // Check if question has been answered
+    const response = userResponses[currentQuestion.id];
+    const isAnswered = currentQuestion.type === 'single' ? 
+        response !== undefined : 
+        Array.isArray(response) && (
+            response.length > 0 || 
+            (currentQuestion.id === 'Q3' && response.includes('none'))
+        );
+    
+    if (!isAnswered) {
+        alert('Please select an option before proceeding.');
+        return;
+    }
+    
     if (currentQuestionIndex < getQuestionCount() - 1) {
         currentQuestionIndex++;
         showQuestion(currentQuestionIndex);
