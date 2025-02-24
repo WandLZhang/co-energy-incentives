@@ -1,5 +1,6 @@
 import { debugLog, checkQuestionnaireVisibility, updateOptionStyles, queryIncentives } from './utils.js';
 import { questions, conditionalQuestions } from './questions.js';
+import { updateSidebar } from './sidebar.js';
 
 // State management
 let currentQuestionIndex = 0;
@@ -300,6 +301,7 @@ export async function selectOption(question, option) {
         const results = await queryIncentives(queryData);
         if (results) {
             updateResultsDisplay(results);
+            updateSidebar(results, userResponses);
         }
     }
 }
