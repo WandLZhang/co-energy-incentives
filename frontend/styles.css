@@ -248,10 +248,12 @@ body::before {
 
 .program-item {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: 4px;
+    padding: 4px 6px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 0.75rem;
+    margin-bottom: 2px;
 }
 
 .program-item:hover {

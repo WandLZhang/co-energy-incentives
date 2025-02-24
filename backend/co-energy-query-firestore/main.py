@@ -8,6 +8,7 @@ db = firestore.client(app, "co-energy")
 
 def apply_filters(query, data):
     """Apply filters to the Firestore query based on user responses."""
+    print(f"Applying filters with data: {data}")
     # Start with zipcode filter if provided
     if 'zipcode' in data:
         query = query.where('eligible_zip_codes', 'array_contains', data['zipcode'])
@@ -146,27 +147,43 @@ def apply_filters(query, data):
 
 def process_results(results):
     """Process query results to return summary and program details."""
+    print("Starting to process results")
     programs = []
     total_amount = 0
     
-    for doc in results:
-        data = doc.to_dict()
-        amount = data.get('amount_number', 0)
+    try:
+        results_list = list(results)  # Convert stream to list to check if empty
+        print(f"Found {len(results_list)} documents")
         
-        programs.append({
-            'id': doc.id,
-            'short_description_en': data.get('short_description_en', ''),
-            'short_description_es': data.get('short_description_es', ''),
-            'amount': amount
-        })
-        
-        total_amount += amount
-    
-    return {
-        'opportunities_count': len(programs),
-        'total_potential': total_amount,
-        'programs': programs
-    }
+        for doc in results_list:
+            data = doc.to_dict()
+            print(f"Processing document {doc.id}: {data}")
+            # Get amount, defaulting to 0 if both amount fields are None
+            amount_max = data.get('amount_maximum')
+            amount_num = data.get('amount_number')
+            amount = amount_max if amount_max is not None else (amount_num if amount_num is not None else 0)
+            
+            programs.append({
+                'id': doc.id,
+                'short_description_en': data.get('short_description_en', ''),
+                'short_description_es': data.get('short_description_es', ''),
+                'amount': amount
+            })
+            
+            # Only add to total if amount is a number
+            if isinstance(amount, (int, float)):
+                total_amount += amount
+            
+        return {
+            'opportunities_count': len(programs),
+            'total_potential': total_amount,
+            'programs': programs
+        }
+    except Exception as e:
+        print(f"Error processing results: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        raise  # Re-raise the exception to be caught by the outer try-except
 
 @functions_framework.http
 def query_incentives(request):
@@ -189,6 +206,7 @@ def query_incentives(request):
     try:
         # Get request data
         request_data = request.get_json()
+        print(f"Received request data: {request_data}")
         
         if not request_data:
             return (jsonify({'error': 'No data provided'}), 400, headers)
@@ -196,11 +214,16 @@ def query_incentives(request):
         # Build and execute query
         query = db.collection('incentives')
         query = apply_filters(query, request_data)
+        print("Query built, streaming results...")
         results = query.stream()
         
         # Process and return results
         processed_results = process_results(results)
+        print(f"Successfully processed results: {processed_results}")
         return (jsonify(processed_results), 200, headers)
         
     except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
         return (jsonify({'error': str(e)}), 500, headers)
