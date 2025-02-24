@@ -86,26 +86,31 @@
         </div>
     </div>
 
-    <!-- Questionnaire Container (Outside main content for proper z-indexing) -->
-    <div id="questionnaire-container" class="hidden fixed inset-0 flex items-center justify-center z-40">
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div id="question-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 w-full mx-4 relative" style="z-index: 2;">
-            <!-- Results Summary -->
-            <div id="results-summary" class="hidden mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="bg-white bg-opacity-20 rounded-lg p-4 flex-1 mr-2">
-                        <h3 class="text-gray-300 text-sm mb-1">Opportunities available:</h3>
-                        <p id="opportunities-count" class="text-2xl font-bold text-blue-500">0</p>
-                    </div>
-                    <div class="bg-white bg-opacity-20 rounded-lg p-4 flex-1 ml-2">
-                        <h3 class="text-gray-300 text-sm mb-1">Total potential:</h3>
-                        <p id="total-potential" class="text-2xl font-bold text-green-500">$0</p>
-                    </div>
+    <!-- Results Summary (Fixed at top) -->
+    <div id="results-summary" class="hidden fixed top-24 left-1/2 transform -translate-x-1/2 w-full max-w-xl px-4 z-50">
+        <div class="flex justify-between items-center">
+            <div class="bg-white bg-opacity-30 backdrop-blur-lg rounded-xl p-6 flex-1 mr-2 shadow-lg">
+                <h3 class="text-white text-sm mb-2 text-center">Opportunities available</h3>
+                <div class="slot-machine-wrap">
+                    <p id="opportunities-count" class="text-4xl font-bold text-blue-400 text-center">0</p>
                 </div>
             </div>
+            <div class="bg-white bg-opacity-30 backdrop-blur-lg rounded-xl p-6 flex-1 ml-2 shadow-lg">
+                <h3 class="text-white text-sm mb-2 text-center">Total potential</h3>
+                <div class="slot-machine-wrap">
+                    <p id="total-potential" class="text-4xl font-bold text-green-400 text-center">$0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questionnaire Container (Outside main content for proper z-indexing) -->
+    <div id="questionnaire-container" class="hidden fixed inset-0 flex items-start justify-center z-40">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div id="question-card" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl space-y-6 w-full mx-4 relative mt-64" style="z-index: 2;">
             <h2 id="question-text" class="text-2xl font-bold text-white text-center"></h2>
             <div id="options-container" class="space-y-4"></div>
-            <div class="flex justify-between mt-6">
+            <div id="button-container" class="flex justify-between mt-6 transition-opacity duration-300">
                 <button id="prev-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out hidden">Previous</button>
                 <button id="next-question" class="bg-teal-500 hover:bg-teal-400 text-white px-6 py-2 rounded-lg transition-all duration-300 ease-in-out">Next</button>
             </div>

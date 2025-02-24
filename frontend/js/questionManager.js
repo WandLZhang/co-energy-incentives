@@ -76,6 +76,37 @@ export function finishQuestionnaire() {
     alert('Questionnaire completed! Check console for responses.');
 }
 
+// Function to animate number change with slot machine effect
+export function animateNumberChange(element, newValue, prefix = '') {
+    // Create temporary elements for animation
+    const oldValue = element.textContent;
+    const oldEl = element.cloneNode(true);
+    const newEl = element.cloneNode(true);
+    newEl.textContent = prefix + newValue;
+    
+    // Set up animation classes
+    oldEl.classList.add('slot-machine-out');
+    newEl.classList.add('slot-machine-in');
+    newEl.style.position = 'absolute';
+    newEl.style.top = '0';
+    newEl.style.left = '0';
+    newEl.style.width = '100%';
+    
+    // Clear and set up container
+    const container = element.parentElement;
+    container.style.position = 'relative';
+    container.innerHTML = '';
+    container.appendChild(oldEl);
+    container.appendChild(newEl);
+    
+    // Remove elements after animation
+    setTimeout(() => {
+        element.textContent = prefix + newValue;
+        container.innerHTML = '';
+        container.appendChild(element);
+    }, 300);
+}
+
 // Function to update results display
 function updateResultsDisplay(data) {
     debugLog('[QUESTIONNAIRE] Updating results display:', data);
@@ -85,8 +116,10 @@ function updateResultsDisplay(data) {
     
     if (data && resultsDiv && opportunitiesCount && totalPotential) {
         resultsDiv.classList.remove('hidden');
-        opportunitiesCount.textContent = data.opportunities_count;
-        totalPotential.textContent = `$${data.total_potential.toLocaleString()}`;
+        
+        // Animate the number changes
+        animateNumberChange(opportunitiesCount, data.opportunities_count);
+        animateNumberChange(totalPotential, data.total_potential.toLocaleString(), '$');
     } else {
         if (resultsDiv) resultsDiv.classList.add('hidden');
     }
@@ -171,121 +204,132 @@ export function showQuestion(index) {
         optionsCount: currentQuestion.options.length
     });
     
-    // Fade out
-    questionCard.style.opacity = '0';
+    // Prepare content while card is invisible
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const prevButton = document.getElementById('prev-question');
+    const nextButton = document.getElementById('next-question');
     
-    setTimeout(() => {
-        try {
-            const questionText = document.getElementById('question-text');
-            const optionsContainer = document.getElementById('options-container');
+    if (!questionText || !optionsContainer || !prevButton || !nextButton) {
+        throw new Error('[QUESTIONNAIRE] Required question elements not found');
+    }
+    
+    // Hide all elements first
+    questionCard.style.opacity = '0';
+    questionText.style.opacity = '0';
+    optionsContainer.style.opacity = '0';
+    const buttonContainer = document.getElementById('button-container');
+    if (buttonContainer) {
+        buttonContainer.style.opacity = '0';
+    }
+    
+    // Prepare content
+    questionText.textContent = currentQuestion.text;
+    optionsContainer.innerHTML = '';
             
-            if (!questionText || !optionsContainer) {
-                throw new Error('[QUESTIONNAIRE] Required question elements not found');
-            }
+            try {
+        // Configure layout based on question type
+        if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
+            // Wide layout with small options for Q3, Q10, and Q13
+            questionCard.classList.add('max-w-7xl');
+            questionCard.classList.remove('max-w-xl');
+            const gridClass = 
+                currentQuestion.id === 'Q3' ? 'q3-options-grid' :
+                currentQuestion.id === 'Q10' ? 'q10-options-grid' : 'q13-options-grid';
+            optionsContainer.classList.add(gridClass);
+            optionsContainer.classList.remove('space-y-3');
+        } else {
+            // Narrow layout with larger options for other questions
+            questionCard.classList.add('max-w-xl');
+            questionCard.classList.remove('max-w-7xl');
+            optionsContainer.classList.add('space-y-3', 'px-2');
+            optionsContainer.classList.remove('q3-options-grid');
+        }
+        
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option.text;
+            button.dataset.value = option.value;
             
-            questionText.textContent = currentQuestion.text;
-            optionsContainer.innerHTML = '';
+            // Add base classes
+            const baseClasses = [
+                'text-left',
+                'transition-all',
+                'duration-300',
+                'ease-in-out',
+                'mt-4'  // Added explicit margin-top
+            ];
             
-            // Configure layout based on question type
             if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
-                // Wide layout with small options for Q3, Q10, and Q13
-                questionCard.classList.add('max-w-7xl');
-                questionCard.classList.remove('max-w-xl');
-                const gridClass = 
-                    currentQuestion.id === 'Q3' ? 'q3-options-grid' :
-                    currentQuestion.id === 'Q10' ? 'q10-options-grid' : 'q13-options-grid';
-                optionsContainer.classList.add(gridClass);
-                optionsContainer.classList.remove('space-y-3');
+                baseClasses.push(
+                    currentQuestion.id === 'Q3' ? 'q3-option-button' :
+                    currentQuestion.id === 'Q10' ? 'q10-option-button' : 'q13-option-button',
+                    'text-sm',
+                    'font-medium',
+                    'break-words',
+                    'bg-white',
+                    'bg-opacity-20',
+                    'text-white'
+                );
             } else {
-                // Narrow layout with larger options for other questions
-                questionCard.classList.add('max-w-xl');
-                questionCard.classList.remove('max-w-7xl');
-                optionsContainer.classList.add('space-y-3', 'px-2');
-                optionsContainer.classList.remove('q3-options-grid');
+                baseClasses.push(
+                    'px-4',
+                    'py-3',
+                    'text-base',
+                    'min-h-[3rem]',
+                    'w-full',
+                    'flex',
+                    'items-center',
+                    'bg-white',
+                    'bg-opacity-20',
+                    'hover:bg-opacity-30',
+                    'text-white',
+                    'rounded-lg'
+                );
             }
             
-            currentQuestion.options.forEach(option => {
-                const button = document.createElement('button');
-                button.textContent = option.text;
-                button.dataset.value = option.value;
-                
-                // Add base classes
-                const baseClasses = [
-                    'text-left',
-                    'transition-all',
-                    'duration-300',
-                    'ease-in-out',
-                    'mt-4'  // Added explicit margin-top
-                ];
-                
-                if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
-                    baseClasses.push(
-                        currentQuestion.id === 'Q3' ? 'q3-option-button' :
-                        currentQuestion.id === 'Q10' ? 'q10-option-button' : 'q13-option-button',
-                        'text-sm',
-                        'font-medium',
-                        'break-words',
-                        'bg-white',
-                        'bg-opacity-20',
-                        'text-white'
-                    );
-                } else {
-                    baseClasses.push(
-                        'px-4',
-                        'py-3',
-                        'text-base',
-                        'min-h-[3rem]',
-                        'w-full',
-                        'flex',
-                        'items-center',
-                        'bg-white',
-                        'bg-opacity-20',
-                        'hover:bg-opacity-30',
-                        'text-white',
-                        'rounded-lg'
-                    );
-                }
-                
-                button.classList.add(...baseClasses);
-                
-                // Add selected state if option is already chosen
-                const responses = userResponses[currentQuestion.id] || [];
-                if (currentQuestion.type === 'single' && responses === option.value) {
-                    button.classList.add('bg-teal-500');
-                    button.classList.remove('bg-white');
-                } else if (currentQuestion.type === 'multi' && responses.includes(option.value)) {
-                    button.classList.add('bg-teal-500');
-                    button.classList.remove('bg-white');
-                }
-                
-                button.addEventListener('click', () => selectOption(currentQuestion, option));
-                optionsContainer.appendChild(button);
-            });
+            button.classList.add(...baseClasses);
             
-            // Update navigation buttons
-            const prevButton = document.getElementById('prev-question');
-            const nextButton = document.getElementById('next-question');
-            
-            if (prevButton) {
-                prevButton.classList.toggle('hidden', index === 0);
+            // Add selected state if option is already chosen
+            const responses = userResponses[currentQuestion.id] || [];
+            if (currentQuestion.type === 'single' && responses === option.value) {
+                button.classList.add('bg-teal-500');
+                button.classList.remove('bg-white');
+            } else if (currentQuestion.type === 'multi' && responses.includes(option.value)) {
+                button.classList.add('bg-teal-500');
+                button.classList.remove('bg-white');
             }
             
-            if (nextButton) {
-                nextButton.textContent = index === getQuestionCount() - 1 ? 'Finish' : 'Next';
-            }
+            button.addEventListener('click', () => selectOption(currentQuestion, option));
+            optionsContainer.appendChild(button);
+        });
+        
+        // Update navigation buttons
+        prevButton.classList.toggle('hidden', index === 0);
+        nextButton.textContent = index === getQuestionCount() - 1 ? 'Finish' : 'Next';
+        
+        // Fade everything in together
+        setTimeout(() => {
+            questionCard.style.transition = 'opacity 0.3s ease-in-out';
+            questionText.style.transition = 'opacity 0.3s ease-in-out';
+            optionsContainer.style.transition = 'opacity 0.3s ease-in-out';
             
-            // Fade in
             questionCard.style.opacity = '1';
+            questionText.style.opacity = '1';
+            optionsContainer.style.opacity = '1';
+            if (buttonContainer) {
+                buttonContainer.style.opacity = '1';
+            }
+            
             debugLog('[QUESTIONNAIRE] Question displayed successfully');
             
-            // Check visibility after a short delay
+            // Check visibility after elements are visible
             setTimeout(() => {
                 debugLog('[QUESTIONNAIRE] Checking final visibility');
                 checkQuestionnaireVisibility();
-            }, 100);
-            
-        } catch (error) {
-            console.error('[QUESTIONNAIRE] Error displaying question:', error);
-        }
-    }, 300);
+            }, 300);
+        }, 300);
+    } catch (error) {
+        console.error('[QUESTIONNAIRE] Error displaying question:', error);
+    }
 }
