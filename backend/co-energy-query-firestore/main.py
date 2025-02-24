@@ -129,29 +129,35 @@ def should_include_program(program, filters):
     """Determine if a program should be included based on array-based filters."""
     # Q3: Check if program has any of the selected items
     if 'Q3' in filters and isinstance(filters['Q3'], list):
-        item_map = {
-            'a': 'attic_insulation', 'b': 'wall_insulation', 'c': 'floor_insulation',
-            'd': 'rim_joist_insulation', 'e': 'air_sealing', 'f': 'duct_sealing',
-            'g': 'window_replacement', 'h': 'door_replacement', 'i': 'heat_pump_water_heater',
-            'j': 'electric_resistance_water_heater', 'k': 'ducted_heat_pump',
-            'l': 'ductless_heat_pump', 'm': 'air_to_water_heat_pump',
-            'n': 'ground_source_heat_pump', 'o': 'induction_stove',
-            'p': 'heat_pump_dryer', 'q': 'electric_resistance_dryer',
-            'r': 'smart_thermostat', 's': 'whole_house_fan',
-            't': 'evaporative_cooler', 'u': 'ev_charger_l2',
-            'v': 'ev_charger_dcfc', 'w': 'ev_new', 'x': 'ev_used',
-            'y': 'ebike', 'z': 'electric_outdoor_equipment',
-            'aa': 'battery_storage', 'bb': 'electric_thermal_storage',
-            'cc': 'energy_audit', 'dd': 'electric_panel_upgrade',
-            'ee': 'electric_wiring_upgrade', 'ff': 'electric_service_upgrades',
-            'gg': 'adaptive_ebike', 'hh': 'other_weatherization',
-            'ii': 'other'
-        }
-        selected_items = [item_map[opt] for opt in filters['Q3'] if opt in item_map]
-        if selected_items:
+        # If Q3 is empty array, only return programs with no items
+        if len(filters['Q3']) == 0:
             program_items = program.get('items', [])
-            if not any(item in program_items for item in selected_items):
+            if program_items and len(program_items) > 0:
                 return False
+        else:
+            item_map = {
+                'a': 'attic_insulation', 'b': 'wall_insulation', 'c': 'floor_insulation',
+                'd': 'rim_joist_insulation', 'e': 'air_sealing', 'f': 'duct_sealing',
+                'g': 'window_replacement', 'h': 'door_replacement', 'i': 'heat_pump_water_heater',
+                'j': 'electric_resistance_water_heater', 'k': 'ducted_heat_pump',
+                'l': 'ductless_heat_pump', 'm': 'air_to_water_heat_pump',
+                'n': 'ground_source_heat_pump', 'o': 'induction_stove',
+                'p': 'heat_pump_dryer', 'q': 'electric_resistance_dryer',
+                'r': 'smart_thermostat', 's': 'whole_house_fan',
+                't': 'evaporative_cooler', 'u': 'ev_charger_l2',
+                'v': 'ev_charger_dcfc', 'w': 'ev_new', 'x': 'ev_used',
+                'y': 'ebike', 'z': 'electric_outdoor_equipment',
+                'aa': 'battery_storage', 'bb': 'electric_thermal_storage',
+                'cc': 'energy_audit', 'dd': 'electric_panel_upgrade',
+                'ee': 'electric_wiring_upgrade', 'ff': 'electric_service_upgrades',
+                'gg': 'adaptive_ebike', 'hh': 'other_weatherization',
+                'ii': 'other'
+            }
+            selected_items = [item_map[opt] for opt in filters['Q3'] if opt in item_map]
+            if selected_items:
+                program_items = program.get('items', [])
+                if not any(item in program_items for item in selected_items):
+                    return False
     
     # Q8: Check for assistance program in payment methods
     if 'Q8' in filters and filters['Q8'] == 'a':

@@ -16,6 +16,8 @@ export const questions = [
         text: 'Which of the following energy upgrades are you interested in? (Select all that apply)',
         type: 'multi',
         options: [
+            { value: 'all', text: 'All options' },
+            { value: 'none', text: 'None' },
             { value: 'a', text: 'Attic, roof, or ceiling insulation' },
             { value: 'b', text: 'Wall insulation' },
             { value: 'c', text: 'Floor, basement, or crawlspace insulation' },

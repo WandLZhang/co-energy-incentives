@@ -140,25 +140,81 @@ export async function selectOption(question, option) {
             value: option.value
         });
     } else {
-        if (!userResponses[question.id]) {
-            userResponses[question.id] = [];
-        }
-        
-        const index = userResponses[question.id].indexOf(option.value);
-        if (index > -1) {
-            userResponses[question.id].splice(index, 1);
-            debugLog('[QUESTIONNAIRE] Removed multi response:', {
-                questionId: question.id,
-                value: option.value,
-                remainingValues: userResponses[question.id]
-            });
+        // Special handling for Q3 and Q10 "All options" behavior
+        if (question.id === 'Q3' || question.id === 'Q10') {
+            if (!userResponses[question.id]) {
+                userResponses[question.id] = [];
+            }
+
+            const isQ3 = question.id === 'Q3';
+            const allValue = isQ3 ? 'all' : 'h'; // 'h' is "all types" for Q10
+            const noneValue = isQ3 ? 'none' : null;
+
+            if (option.value === allValue) {
+                // For "All options", select all options except special ones
+                userResponses[question.id] = question.options
+                    .filter(opt => opt.value !== allValue && (!noneValue || opt.value !== noneValue))
+                    .map(opt => opt.value);
+                userResponses[question.id].push(allValue); // Add marker to indicate "all" selected
+                debugLog(`[QUESTIONNAIRE] Selected All options for ${question.id}`);
+                updateOptionStyles(question, userResponses);
+            } else if (isQ3 && option.value === noneValue) {
+                // For Q3 "None", clear all selections and add 'none'
+                userResponses[question.id] = ['none'];
+                debugLog('[QUESTIONNAIRE] Selected None - clearing all selections');
+                updateOptionStyles(question, userResponses);
+            } else {
+                // Regular option clicked
+                if (userResponses[question.id].includes(allValue)) {
+                    // If "All options" was selected, clear all and just select this option
+                    userResponses[question.id] = [option.value];
+                    debugLog(`[QUESTIONNAIRE] Cleared All options and selected single option for ${question.id}:`, option.value);
+                    updateOptionStyles(question, userResponses);
+                } else {
+                    // Normal multi-select behavior
+                    const index = userResponses[question.id].indexOf(option.value);
+                    
+                    // Remove special values if they were selected
+                    userResponses[question.id] = userResponses[question.id]
+                        .filter(val => val !== allValue && (!noneValue || val !== noneValue));
+                    
+                    if (index > -1) {
+                        userResponses[question.id].splice(index, 1);
+                        debugLog(`[QUESTIONNAIRE] Removed multi response for ${question.id}:`, {
+                            value: option.value,
+                            remainingValues: userResponses[question.id]
+                        });
+                    } else {
+                        userResponses[question.id].push(option.value);
+                        debugLog(`[QUESTIONNAIRE] Added multi response for ${question.id}:`, {
+                            value: option.value,
+                            allValues: userResponses[question.id]
+                        });
+                    }
+                }
+            }
         } else {
-            userResponses[question.id].push(option.value);
-            debugLog('[QUESTIONNAIRE] Added multi response:', {
-                questionId: question.id,
-                value: option.value,
-                allValues: userResponses[question.id]
-            });
+            // Normal multi-select behavior for other questions
+            if (!userResponses[question.id]) {
+                userResponses[question.id] = [];
+            }
+            
+            const index = userResponses[question.id].indexOf(option.value);
+            if (index > -1) {
+                userResponses[question.id].splice(index, 1);
+                debugLog('[QUESTIONNAIRE] Removed multi response:', {
+                    questionId: question.id,
+                    value: option.value,
+                    remainingValues: userResponses[question.id]
+                });
+            } else {
+                userResponses[question.id].push(option.value);
+                debugLog('[QUESTIONNAIRE] Added multi response:', {
+                    questionId: question.id,
+                    value: option.value,
+                    allValues: userResponses[question.id]
+                });
+            }
         }
     }
     
@@ -167,10 +223,26 @@ export async function selectOption(question, option) {
     // Query incentives with updated responses
     const zipcode = document.getElementById('zipcode').value;
     if (zipcode) {
+        // Create a copy of responses for querying
         const queryData = {
             ...userResponses,
             zipcode: zipcode
         };
+
+        // Special handling for Q3 query data
+        if (question.id === 'Q3') {
+            if (queryData[question.id]?.includes('all')) {
+                // Remove Q3 entirely for "All options"
+                delete queryData[question.id];
+            } else if (queryData[question.id]?.includes('none')) {
+                // Send empty array for "None"
+                queryData[question.id] = [];
+            } else if (queryData[question.id]) {
+                // Remove 'all' and 'none' from responses if present
+                queryData[question.id] = queryData[question.id].filter(val => val !== 'all' && val !== 'none');
+            }
+        }
+
         const results = await queryIncentives(queryData);
         if (results) {
             updateResultsDisplay(results);
@@ -227,7 +299,7 @@ export function showQuestion(index) {
     questionText.textContent = currentQuestion.text;
     optionsContainer.innerHTML = '';
             
-            try {
+    try {
         // Configure layout based on question type
         if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
             // Wide layout with small options for Q3, Q10, and Q13
@@ -295,9 +367,34 @@ export function showQuestion(index) {
             if (currentQuestion.type === 'single' && responses === option.value) {
                 button.classList.add('bg-teal-500');
                 button.classList.remove('bg-white');
-            } else if (currentQuestion.type === 'multi' && responses.includes(option.value)) {
-                button.classList.add('bg-teal-500');
-                button.classList.remove('bg-white');
+            } else if (currentQuestion.type === 'multi') {
+                if (currentQuestion.id === 'Q3') {
+                    // Special handling for Q3 button states
+                    if (option.value === 'all') {
+                        // "All options" is selected if 'all' is in responses
+                        if (responses.includes('all')) {
+                            button.classList.add('bg-teal-500');
+                            button.classList.remove('bg-white');
+                        }
+                    } else if (option.value === 'none') {
+                        // "None" is selected if 'none' is in responses
+                        if (responses.includes('none')) {
+                            button.classList.add('bg-teal-500');
+                            button.classList.remove('bg-white');
+                        }
+                    } else if (responses.includes('all')) {
+                        // All regular options are selected when "All options" is selected
+                        button.classList.add('bg-teal-500');
+                        button.classList.remove('bg-white');
+                    } else if (responses.includes(option.value)) {
+                        // Show option as selected if it's in responses
+                        button.classList.add('bg-teal-500');
+                        button.classList.remove('bg-white');
+                    }
+                } else if (responses.includes(option.value)) {
+                    button.classList.add('bg-teal-500');
+                    button.classList.remove('bg-white');
+                }
             }
             
             button.addEventListener('click', () => selectOption(currentQuestion, option));
