@@ -1,4 +1,4 @@
-import { debugLog, checkQuestionnaireVisibility, updateOptionStyles } from './utils.js';
+import { debugLog, checkQuestionnaireVisibility, updateOptionStyles, queryIncentives } from './utils.js';
 import { questions, conditionalQuestions } from './questions.js';
 
 // State management
@@ -76,7 +76,23 @@ export function finishQuestionnaire() {
     alert('Questionnaire completed! Check console for responses.');
 }
 
-export function selectOption(question, option) {
+// Function to update results display
+function updateResultsDisplay(data) {
+    debugLog('[QUESTIONNAIRE] Updating results display:', data);
+    const resultsDiv = document.getElementById('results-summary');
+    const opportunitiesCount = document.getElementById('opportunities-count');
+    const totalPotential = document.getElementById('total-potential');
+    
+    if (data && resultsDiv && opportunitiesCount && totalPotential) {
+        resultsDiv.classList.remove('hidden');
+        opportunitiesCount.textContent = data.opportunities_count;
+        totalPotential.textContent = `$${data.total_potential.toLocaleString()}`;
+    } else {
+        if (resultsDiv) resultsDiv.classList.add('hidden');
+    }
+}
+
+export async function selectOption(question, option) {
     debugLog('[QUESTIONNAIRE] Selecting option:', {
         questionId: question.id,
         optionValue: option.value,
@@ -114,6 +130,19 @@ export function selectOption(question, option) {
     }
     
     updateOptionStyles(question, userResponses);
+    
+    // Query incentives with updated responses
+    const zipcode = document.getElementById('zipcode').value;
+    if (zipcode) {
+        const queryData = {
+            ...userResponses,
+            zipcode: zipcode
+        };
+        const results = await queryIncentives(queryData);
+        if (results) {
+            updateResultsDisplay(results);
+        }
+    }
 }
 
 export function showQuestion(index) {

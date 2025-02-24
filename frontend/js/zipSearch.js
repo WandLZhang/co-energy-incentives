@@ -1,5 +1,5 @@
-import { debugLog } from './utils.js';
-import { showQuestion, setupQuestionnaireNavigation } from './questionManager.js';
+import { debugLog, queryIncentives } from './utils.js';
+import { showQuestion, setupQuestionnaireNavigation, userResponses } from './questionManager.js';
 
 export function initializeZipSearch() {
     const zipInput = document.getElementById('zipcode');
@@ -56,24 +56,33 @@ function handleSearch(zipInput, searchButton) {
         </svg>
     `;
 
-    debugLog('[QUESTIONNAIRE] Making API call to Cloud Function');
-    fetch('https://us-central1-gemini-med-lit-review.cloudfunctions.net/getMapImage', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ zipcode: zip })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        debugLog('[QUESTIONNAIRE] API response received');
-        return response.json();
-    })
-    .then(data => {
-        debugLog('[QUESTIONNAIRE] Map data received, loading image');
-        handleMapImageLoad(data.mapImage);
+    debugLog('[QUESTIONNAIRE] Making API calls');
+    
+    // Query incentives with zipcode
+    const queryData = {
+        ...userResponses,
+        zipcode: zip
+    };
+    
+    // Make both API calls in parallel
+    Promise.all([
+        // Map image API call
+        fetch('https://us-central1-gemini-med-lit-review.cloudfunctions.net/getMapImage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ zipcode: zip })
+        }).then(response => {
+            if (!response.ok) throw new Error('Map API response was not ok');
+            return response.json();
+        }),
+        // Incentives API call
+        queryIncentives(queryData)
+    ])
+    .then(([mapData, incentivesData]) => {
+        debugLog('[QUESTIONNAIRE] Both API calls successful', { mapData, incentivesData });
+        handleMapImageLoad(mapData.mapImage, incentivesData);
     })
     .catch(error => {
         console.error('[QUESTIONNAIRE] Error:', error);
@@ -88,7 +97,7 @@ function handleSearch(zipInput, searchButton) {
     });
 }
 
-function handleMapImageLoad(imageUrl) {
+function handleMapImageLoad(imageUrl, incentivesData) {
     debugLog('[QUESTIONNAIRE] Starting map image load process');
     // Create a temporary image to preload
     const tempImage = new Image();
@@ -160,6 +169,17 @@ function handleMapImageLoad(imageUrl) {
                             debugLog('[QUESTIONNAIRE] Fading in question card');
                             questionCard.style.transition = 'opacity 0.3s ease-in-out';
                             questionCard.style.opacity = '1';
+                        }
+                        
+                        // Update results display with initial incentives data
+                        const resultsDiv = document.getElementById('results-summary');
+                        const opportunitiesCount = document.getElementById('opportunities-count');
+                        const totalPotential = document.getElementById('total-potential');
+                        
+                        if (incentivesData && resultsDiv && opportunitiesCount && totalPotential) {
+                            resultsDiv.classList.remove('hidden');
+                            opportunitiesCount.textContent = incentivesData.opportunities_count;
+                            totalPotential.textContent = `$${incentivesData.total_potential.toLocaleString()}`;
                         }
                         
                         debugLog('[QUESTIONNAIRE] Showing first question');

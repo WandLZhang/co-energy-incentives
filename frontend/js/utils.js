@@ -75,6 +75,31 @@ export function checkQuestionnaireVisibility() {
     }
 }
 
+// Function to query incentives based on user responses
+export async function queryIncentives(responses) {
+    debugLog('[API] Querying incentives with responses:', responses);
+    try {
+        const response = await fetch('https://co-energy-query-firestore-934163632848.us-central1.run.app', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(responses)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        debugLog('[API] Received incentives data:', data);
+        return data;
+    } catch (error) {
+        console.error('[API] Error querying incentives:', error);
+        return null;
+    }
+}
+
 // Helper function for updating option styles
 export function updateOptionStyles(question, userResponses) {
     debugLog('[QUESTIONNAIRE] Updating option styles for question:', question.id);
