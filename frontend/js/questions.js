@@ -7,8 +7,7 @@ export const questions = [
         options: [
             { value: 'a', text: 'I own my home' },
             { value: 'b', text: 'I rent my home' },
-            { value: 'c', text: 'Other (e.g., landlord, property manager)' },
-            { value: 'd', text: 'Not applicable (e.g., interested in EV incentives only)' }
+            { value: 'c', text: 'Other (e.g., landlord, property manager)' }
         ]
     },
     {
