@@ -65,7 +65,27 @@ export function showNextQuestion() {
 
 export function showPreviousQuestion() {
     debugLog('[QUESTIONNAIRE] Previous button clicked. Current index:', currentQuestionIndex);
-    if (currentQuestionIndex > 0) {
+    const currentQuestion = getCurrentQuestion(currentQuestionIndex);
+    
+    if (currentQuestion && currentQuestion.id === 'Q2') {
+        // Fade out the questionnaire container
+        const questionnaireContainer = document.getElementById('questionnaire-container');
+        const resultsSummary = document.getElementById('results-summary');
+        
+        if (questionnaireContainer) {
+            questionnaireContainer.style.transition = 'opacity 0.3s ease-in-out';
+            questionnaireContainer.style.opacity = '0';
+        }
+        if (resultsSummary) {
+            resultsSummary.style.transition = 'opacity 0.3s ease-in-out';
+            resultsSummary.style.opacity = '0';
+        }
+        
+        // Reload after animation completes
+        setTimeout(() => {
+            window.location.reload();
+        }, 300);
+    } else if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         showQuestion(currentQuestionIndex);
     }
@@ -152,11 +172,14 @@ export async function selectOption(question, option) {
 
             if (option.value === allValue) {
                 // For "All options", select all options except special ones
-                userResponses[question.id] = question.options
-                    .filter(opt => opt.value !== allValue && (!noneValue || opt.value !== noneValue))
-                    .map(opt => opt.value);
-                userResponses[question.id].push(allValue); // Add marker to indicate "all" selected
-                debugLog(`[QUESTIONNAIRE] Selected All options for ${question.id}`);
+                const wasSelected = userResponses[question.id].includes(allValue);
+                if (wasSelected) {
+                    userResponses[question.id] = [];
+                } else {
+                    // Don't actually select all options, just add the marker
+                    userResponses[question.id] = [allValue];
+                }
+                debugLog(`[QUESTIONNAIRE] Toggled All options for ${question.id}`);
                 updateOptionStyles(question, userResponses);
             } else if (isQ3 && option.value === noneValue) {
                 // For Q3 "None", clear all selections and add 'none'
@@ -229,17 +252,22 @@ export async function selectOption(question, option) {
             zipcode: zipcode
         };
 
-        // Special handling for Q3 query data
-        if (question.id === 'Q3') {
-            if (queryData[question.id]?.includes('all')) {
-                // Remove Q3 entirely for "All options"
+        // Special handling for Q3 and Q10 query data
+        if (question.id === 'Q3' || question.id === 'Q10') {
+            const isQ3 = question.id === 'Q3';
+            const allValue = isQ3 ? 'all' : 'h';
+            const noneValue = isQ3 ? 'none' : null;
+
+            if (queryData[question.id]?.includes(allValue)) {
+                // Remove field entirely for "All options"
                 delete queryData[question.id];
-            } else if (queryData[question.id]?.includes('none')) {
-                // Send empty array for "None"
+            } else if (isQ3 && queryData[question.id]?.includes(noneValue)) {
+                // Send empty array for "None" (Q3 only)
                 queryData[question.id] = [];
             } else if (queryData[question.id]) {
-                // Remove 'all' and 'none' from responses if present
-                queryData[question.id] = queryData[question.id].filter(val => val !== 'all' && val !== 'none');
+                // Remove special values from responses if present
+                queryData[question.id] = queryData[question.id]
+                    .filter(val => val !== allValue && (!noneValue || val !== noneValue));
             }
         }
 
@@ -368,21 +396,24 @@ export function showQuestion(index) {
                 button.classList.add('bg-teal-500');
                 button.classList.remove('bg-white');
             } else if (currentQuestion.type === 'multi') {
-                if (currentQuestion.id === 'Q3') {
-                    // Special handling for Q3 button states
-                    if (option.value === 'all') {
-                        // "All options" is selected if 'all' is in responses
-                        if (responses.includes('all')) {
+                if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10') {
+                    const isQ3 = currentQuestion.id === 'Q3';
+                    const allValue = isQ3 ? 'all' : 'h';
+                    const noneValue = isQ3 ? 'none' : null;
+
+                    if (option.value === allValue) {
+                        // "All options" is selected if marker is in responses
+                        if (responses.includes(allValue)) {
                             button.classList.add('bg-teal-500');
                             button.classList.remove('bg-white');
                         }
-                    } else if (option.value === 'none') {
-                        // "None" is selected if 'none' is in responses
-                        if (responses.includes('none')) {
+                    } else if (isQ3 && option.value === noneValue) {
+                        // "None" is selected if marker is in responses (Q3 only)
+                        if (responses.includes(noneValue)) {
                             button.classList.add('bg-teal-500');
                             button.classList.remove('bg-white');
                         }
-                    } else if (responses.includes('all')) {
+                    } else if (responses.includes(allValue)) {
                         // All regular options are selected when "All options" is selected
                         button.classList.add('bg-teal-500');
                         button.classList.remove('bg-white');
@@ -402,7 +433,7 @@ export function showQuestion(index) {
         });
         
         // Update navigation buttons
-        prevButton.classList.toggle('hidden', index === 0);
+        prevButton.classList.toggle('hidden', index === 0 && currentQuestion.id !== 'Q2');
         nextButton.textContent = index === getQuestionCount() - 1 ? 'Finish' : 'Next';
         
         // Fade everything in together
