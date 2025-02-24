@@ -224,8 +224,8 @@ body::before {
     z-index: 1100; /* Ensure it's above everything */
     position: fixed;
     right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 96px;
+    transform: none;
     background: rgba(56, 178, 172, 0.9);
     backdrop-filter: blur(8px);
     padding: 12px;
@@ -239,11 +239,11 @@ body::before {
 
 /* Adjust toggle button position when sidebar is open */
 #program-sidebar[style*="width: 300px"] #sidebar-toggle {
-    transform: translate(-300px, -50%) rotate(180deg);
+    transform: translate(-300px, 0) rotate(180deg);
 }
 
 #program-sidebar[style*="width: 300px"] #sidebar-toggle:hover {
-    transform: translate(-304px, -50%) rotate(180deg);
+    transform: translate(-304px, 0) rotate(180deg);
 }
 
 .program-item {
