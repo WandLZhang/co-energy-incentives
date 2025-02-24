@@ -1,5 +1,5 @@
 import { debugLog, verifyDOMElements } from './utils.js';
-import { initializeZipSearch } from './zipSearch.js';
+import { initializeZipSearch, initializeSidebar } from './zipSearch.js';
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize zip code search functionality
     initializeZipSearch();
+    
+    // Initialize sidebar functionality
+    initializeSidebar();
     
     debugLog('Application initialized successfully');
 });

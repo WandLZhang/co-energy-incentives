@@ -118,5 +118,18 @@
     </div>
 
     <script type="module" src="js/main.js"></script>
+
+    <!-- Expandable Sidebar -->
+    <div id="program-sidebar" class="fixed top-0 right-0 h-full w-0 bg-white bg-opacity-10 backdrop-blur-lg transition-all duration-300 overflow-hidden" style="z-index: 1000;">
+        <button id="sidebar-toggle" class="fixed top-1/2 right-0 transform -translate-y-1/2 translate-x-full bg-teal-500 hover:bg-teal-400 text-white p-3 rounded-l-xl shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <div class="p-4 h-full overflow-y-auto">
+            <h3 class="text-xl font-bold text-white mb-4">Available Programs</h3>
+            <ul id="program-list" class="space-y-2"></ul>
+        </div>
+    </div>
 </body>
 </html>
