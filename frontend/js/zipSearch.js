@@ -143,71 +143,69 @@ async function handleMapImageLoad(imageUrl, incentivesData) {
                     return;
                 }
                 
-                debugLog('[QUESTIONNAIRE] Preparing questionnaire container');
+                debugLog('[QUESTIONNAIRE] Preparing all elements before display');
+                
+                // Keep questionnaire container hidden while preparing
                 questionnaireContainer.classList.remove('hidden');
                 questionnaireContainer.style.display = 'flex';
                 questionnaireContainer.style.opacity = '0';
                 
-                // Ensure the question card starts transparent
+                // Prepare question card
                 const questionCard = document.getElementById('question-card');
                 if (questionCard) {
                     questionCard.style.opacity = '0';
                 }
                 
-                // Small delay before fading in the questionnaire
+                // Prepare results summary
+                const resultsDiv = document.getElementById('results-summary');
+                const opportunitiesCount = document.getElementById('opportunities-count');
+                const totalPotential = document.getElementById('total-potential');
+                
+                if (incentivesData && resultsDiv && opportunitiesCount && totalPotential) {
+                    // Set initial values
+                    opportunitiesCount.textContent = '0';
+                    totalPotential.textContent = '$0';
+                    resultsDiv.classList.remove('hidden');
+                    resultsDiv.style.opacity = '0';
+                }
+                
+                // Setup navigation before animation
+                debugLog('[QUESTIONNAIRE] Setting up questionnaire navigation');
+                setupQuestionnaireNavigation();
+                
+                // Prepare first question
+                showQuestion(0);
+                
+                // Synchronize all animations
                 setTimeout(() => {
-                    debugLog('[QUESTIONNAIRE] Fading in questionnaire container');
-                    questionnaireContainer.style.transition = 'opacity 0.3s ease-in-out';
-                    questionnaireContainer.style.opacity = '1';
+                    debugLog('[QUESTIONNAIRE] Fading in all elements together');
                     
-                    // Additional delay before showing first question
-                    setTimeout(() => {
-                        debugLog('[QUESTIONNAIRE] Setting up questionnaire navigation');
-                        setupQuestionnaireNavigation();
-                        
-                        if (questionCard) {
-                            debugLog('[QUESTIONNAIRE] Fading in question card');
-                            questionCard.style.transition = 'opacity 0.3s ease-in-out';
-                            questionCard.style.opacity = '1';
+                    // Set transitions
+                    questionnaireContainer.style.transition = 'opacity 0.5s ease-in-out';
+                    if (questionCard) {
+                        questionCard.style.transition = 'opacity 0.5s ease-in-out';
+                    }
+                    if (resultsDiv) {
+                        resultsDiv.style.transition = 'opacity 0.5s ease-in-out';
+                    }
+                    
+                    // Fade in all elements
+                    questionnaireContainer.style.opacity = '1';
+                    if (questionCard) {
+                        questionCard.style.opacity = '1';
+                    }
+                    if (resultsDiv) {
+                        resultsDiv.style.opacity = '1';
+                    }
+                    
+                    // Animate numbers after elements are visible
+                    setTimeout(async () => {
+                        if (incentivesData && opportunitiesCount && totalPotential) {
+                            const { animateNumberChange } = await import('./questionManager.js');
+                            animateNumberChange(opportunitiesCount, incentivesData.opportunities_count);
+                            animateNumberChange(totalPotential, incentivesData.total_potential.toLocaleString(), '$');
                         }
-                        
-                        // Show results summary with zeros first
-                        const resultsDiv = document.getElementById('results-summary');
-                        const opportunitiesCount = document.getElementById('opportunities-count');
-                        const totalPotential = document.getElementById('total-potential');
-                        
-                        if (incentivesData && resultsDiv && opportunitiesCount && totalPotential) {
-                            // Set initial values to 0
-                            opportunitiesCount.textContent = '0';
-                            totalPotential.textContent = '$0';
-                            
-                            // Show the container
-                            resultsDiv.classList.remove('hidden');
-                            resultsDiv.style.opacity = '0';
-                            
-                            // Fade in the container
-                            setTimeout(() => {
-                                resultsDiv.style.transition = 'opacity 0.3s ease-in-out';
-                                resultsDiv.style.opacity = '1';
-                                
-                                // After container is visible, animate to actual values
-                                setTimeout(async () => {
-                                    // Import the animateNumberChange function
-                                    const { animateNumberChange } = await import('./questionManager.js');
-                                    
-                                    // Animate to actual values
-                                    animateNumberChange(opportunitiesCount, incentivesData.opportunities_count);
-                                    animateNumberChange(totalPotential, incentivesData.total_potential.toLocaleString(), '$');
-                                    
-                                    // Show first question after numbers are updated
-                                    setTimeout(() => {
-                                        debugLog('[QUESTIONNAIRE] Showing first question');
-                                        showQuestion(0);
-                                    }, 300);
-                                }, 300);
-                            }, 100);
-                        }
-                    }, 200);
+                    }, 500);
                 }, 100);
             }, 300);
         } else {
