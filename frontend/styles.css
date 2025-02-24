@@ -78,3 +78,9 @@ body::before {
     background: rgba(255, 255, 255, 0.3);
     transform: translateY(-1px);
 }
+
+/* Selected state for option buttons only */
+#options-container .bg-teal-500 {
+    background: rgba(76, 175, 80, 0.2) !important;
+    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+}
