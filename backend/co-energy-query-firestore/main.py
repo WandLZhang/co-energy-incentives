@@ -17,14 +17,16 @@ def apply_filters(query, data):
     if 'Q2' in data:
         if data['Q2'] == 'a':  # I own my home
             # Return programs that either:
-            # 1. Have homeowner in owner_status array, OR
-            # 2. Have no owner_status field or it's null/empty
-            query = query.where('owner_status', 'in', [None, [], ['homeowner']])
+            # 1. Have no owner_status restrictions (null/empty array)
+            # 2. Support homeowners only
+            # 3. Support both homeowners and renters
+            query = query.where('owner_status', 'in', [None, [], ['homeowner'], ['homeowner', 'renter'], ['renter', 'homeowner']])
         elif data['Q2'] == 'b':  # I rent my home
             # Return programs that either:
-            # 1. Have renter in owner_status array, OR
-            # 2. Have no owner_status field or it's null/empty
-            query = query.where('owner_status', 'in', [None, [], ['renter']])
+            # 1. Have no owner_status restrictions (null/empty array)
+            # 2. Support renters only
+            # 3. Support both homeowners and renters
+            query = query.where('owner_status', 'in', [None, [], ['renter'], ['homeowner', 'renter'], ['renter', 'homeowner']])
         # For 'c' (Other) and 'd' (Not applicable), we don't apply owner_status filter
     
     # Filter by items/upgrades (Q3) - Inclusive OR for selected items
