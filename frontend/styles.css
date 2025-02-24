@@ -84,3 +84,63 @@ body::before {
     background: rgba(76, 175, 80, 0.2) !important;
     border: 1px solid rgba(76, 175, 80, 0.3) !important;
 }
+
+/* Question 10 specific styles */
+.q10-options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    grid-auto-rows: 2.5rem;
+}
+
+.q10-option-button {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    line-height: 1;
+    font-size: .65rem;
+    white-space: normal;
+    overflow-wrap: break-word;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.q10-option-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Question 13 specific styles */
+.q13-options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    grid-auto-rows: 2.5rem;
+}
+
+.q13-option-button {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    line-height: 1;
+    font-size: .65rem;
+    white-space: normal;
+    overflow-wrap: break-word;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.q13-option-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}

@@ -158,11 +158,14 @@ export function showQuestion(index) {
             optionsContainer.innerHTML = '';
             
             // Configure layout based on question type
-            if (currentQuestion.id === 'Q3') {
-                // Wide layout with small options for Q3
+            if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
+                // Wide layout with small options for Q3, Q10, and Q13
                 questionCard.classList.add('max-w-7xl');
                 questionCard.classList.remove('max-w-xl');
-                optionsContainer.classList.add('q3-options-grid');
+                const gridClass = 
+                    currentQuestion.id === 'Q3' ? 'q3-options-grid' :
+                    currentQuestion.id === 'Q10' ? 'q10-options-grid' : 'q13-options-grid';
+                optionsContainer.classList.add(gridClass);
                 optionsContainer.classList.remove('space-y-3');
             } else {
                 // Narrow layout with larger options for other questions
@@ -186,9 +189,10 @@ export function showQuestion(index) {
                     'mt-4'  // Added explicit margin-top
                 ];
                 
-                if (currentQuestion.id === 'Q3') {
+                if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
                     baseClasses.push(
-                        'q3-option-button',
+                        currentQuestion.id === 'Q3' ? 'q3-option-button' :
+                        currentQuestion.id === 'Q10' ? 'q10-option-button' : 'q13-option-button',
                         'text-sm',
                         'font-medium',
                         'break-words',
