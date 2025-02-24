@@ -176,11 +176,18 @@ export async function selectOption(question, option) {
                 if (wasSelected) {
                     userResponses[question.id] = [];
                 } else {
-                    // Don't actually select all options, just add the marker
+                    // Add the marker and update all option buttons
                     userResponses[question.id] = [allValue];
+                    // Update all option buttons except 'none'
+                    const optionsContainer = document.getElementById('options-container');
+                    optionsContainer.querySelectorAll('button').forEach(button => {
+                        if (button.dataset.value !== 'none') {
+                            button.classList.add('bg-teal-500');
+                            button.classList.remove('bg-white');
+                        }
+                    });
                 }
                 debugLog(`[QUESTIONNAIRE] Toggled All options for ${question.id}`);
-                updateOptionStyles(question, userResponses);
             } else if (isQ3 && option.value === noneValue) {
                 // For Q3 "None", clear all selections and add 'none'
                 userResponses[question.id] = ['none'];

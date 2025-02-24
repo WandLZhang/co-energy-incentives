@@ -128,6 +128,26 @@ export function updateOptionStyles(question, userResponses) {
         let isSelected = false;
         if (question.type === 'single') {
             isSelected = currentResponse === optionValue;
+        } else if (question.id === 'Q3' || question.id === 'Q10') {
+            const isQ3 = question.id === 'Q3';
+            const allValue = isQ3 ? 'all' : 'h';
+            const noneValue = isQ3 ? 'none' : null;
+
+            if (Array.isArray(currentResponse)) {
+                if (optionValue === allValue) {
+                    // "All options" button is selected if it's in the responses
+                    isSelected = currentResponse.includes(allValue);
+                } else if (isQ3 && optionValue === noneValue) {
+                    // "None" button is selected if it's in the responses (Q3 only)
+                    isSelected = currentResponse.includes(noneValue);
+                } else if (currentResponse.includes(allValue)) {
+                    // All regular options are selected when "All options" is selected
+                    isSelected = optionValue !== noneValue;
+                } else {
+                    // Normal multi-select behavior
+                    isSelected = currentResponse.includes(optionValue);
+                }
+            }
         } else {
             isSelected = Array.isArray(currentResponse) && currentResponse.includes(optionValue);
         }
