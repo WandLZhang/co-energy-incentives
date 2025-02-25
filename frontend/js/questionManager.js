@@ -451,6 +451,14 @@ export function showQuestion(index) {
             optionsContainer.classList.remove('q3-options-grid');
         }
         
+        // Add specific question classes for Q2 and Q10
+        questionCard.classList.remove('q2-card', 'q10-card');
+        if (currentQuestion.id === 'Q2') {
+            questionCard.classList.add('q2-card');
+        } else if (currentQuestion.id === 'Q10') {
+            questionCard.classList.add('q10-card');
+        }
+        
         currentQuestion.options.forEach(option => {
             const button = document.createElement('button');
             button.textContent = option.text;

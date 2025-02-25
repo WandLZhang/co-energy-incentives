@@ -49,24 +49,25 @@ body::before {
     100% { filter: brightness(1); }
 }
 
-/* Question 3 specific styles */
+/* Question 3 specific styles - UPDATED for better scaling */
 .q3-options-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-    grid-auto-rows: 2.5rem;
+    grid-template-columns: repeat(5, 1fr); /* 5 columns layout */
+    gap: 0.3rem; /* Reduced gap */
+    margin-top: 0.4rem; /* Reduced top margin */
+    grid-auto-rows: 2.2rem; /* Reduced height */
+    /* No max-height or overflow - allow natural expansion */
 }
 
 .q3-option-button {
     width: 100%;
-    height: 2.5rem;
-    padding: 0.25rem;
+    height: 2.2rem; /* Reduced height */
+    padding: 0.2rem; /* Reduced padding */
     display: flex;
     align-items: center;
     text-align: left;
     line-height: 1;
-    font-size: .65rem;
+    font-size: 0.6rem; /* Reduced font size */
     white-space: normal;
     overflow-wrap: break-word;
     background: rgba(255, 255, 255, 0.2);
@@ -88,21 +89,21 @@ body::before {
 /* Question 10 specific styles */
 .q10-options-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-    grid-auto-rows: 2.5rem;
+    grid-template-columns: repeat(5, 1fr); /* 5 columns layout */
+    gap: 0.3rem; /* Reduced gap */
+    margin-top: 0.4rem;
+    grid-auto-rows: 2.2rem; /* Reduced height */
 }
 
 .q10-option-button {
     width: 100%;
-    height: 2.5rem;
-    padding: 0.25rem;
+    height: 2.2rem; /* Reduced height */
+    padding: 0.2rem; /* Reduced padding */
     display: flex;
     align-items: center;
     text-align: left;
     line-height: 1;
-    font-size: .65rem;
+    font-size: 0.6rem; /* Reduced font size */
     white-space: normal;
     overflow-wrap: break-word;
     background: rgba(255, 255, 255, 0.2);
@@ -118,21 +119,21 @@ body::before {
 /* Question 13 specific styles */
 .q13-options-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-    grid-auto-rows: 2.5rem;
+    grid-template-columns: repeat(5, 1fr); /* 5 columns layout */
+    gap: 0.3rem; /* Reduced gap */
+    margin-top: 0.4rem;
+    grid-auto-rows: 2.2rem; /* Reduced height */
 }
 
 .q13-option-button {
     width: 100%;
-    height: 2.5rem;
-    padding: 0.25rem;
+    height: 2.2rem; /* Reduced height */
+    padding: 0.2rem; /* Reduced padding */
     display: flex;
     align-items: center;
     text-align: left;
     line-height: 1;
-    font-size: .65rem;
+    font-size: 0.6rem; /* Reduced font size */
     white-space: normal;
     overflow-wrap: break-word;
     background: rgba(255, 255, 255, 0.2);
@@ -143,6 +144,38 @@ body::before {
 .q13-option-button:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: translateY(-1px);
+}
+
+/* Questionnaire container - NEW: Add more vertical space */
+#questionnaire-container {
+    padding-top: 120px; /* Add more space at the top to prevent overlap */
+}
+
+/* Question card sizing - UPDATED with better vertical positioning */
+#question-card {
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    margin-top: 60px; /* Increased top margin to push content down further */
+}
+
+/* Make Q2 (ownership question) less wide */
+#question-card.q2-card {
+    max-width: 600px; /* Narrower width for Q2 */
+    margin: 40px auto 0; /* Center it and add top margin */
+}
+
+/* Make Q10 (heat pump types) less wide */
+#question-card.q10-card {
+    max-width: 700px; /* Narrower width for Q10 */
+    margin: 40px auto 0; /* Center it and add top margin */
+}
+
+/* Question text sizing */
+#question-text {
+    font-size: 1.4rem; /* Slightly smaller */
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
 }
 
 /* Slot Machine Animation */
@@ -185,6 +218,10 @@ body::before {
 /* Results Summary Styling */
 #results-summary {
     transition: all 0.3s ease;
+    width: 90%; /* Use width instead of transform scale */
+    margin: 0 auto; /* Center the element */
+    position: relative;
+    z-index: 10; /* Ensure it stays above question content */
 }
 
 #results-summary .bg-white {
