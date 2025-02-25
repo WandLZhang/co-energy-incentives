@@ -1,6 +1,7 @@
 import { debugLog, checkQuestionnaireVisibility, updateOptionStyles, queryIncentives } from './utils.js';
 import { questions, conditionalQuestions } from './questions.js';
 import { updateSidebar } from './sidebar.js';
+import confetti from 'canvas-confetti';
 
 // State management
 let currentQuestionIndex = 0;
@@ -113,7 +114,70 @@ export function showPreviousQuestion() {
 
 export function finishQuestionnaire() {
     debugLog('[QUESTIONNAIRE] Completed. User responses:', userResponses);
-    alert('Questionnaire completed! Check console for responses.');
+    showSummaryPage();
+}
+
+function showSummaryPage() {
+    // Hide questionnaire
+    const questionnaireContainer = document.getElementById('questionnaire-container');
+    questionnaireContainer.style.display = 'none';
+
+    // Show summary page
+    const summaryContainer = document.getElementById('summary-container');
+    summaryContainer.style.display = 'flex';
+
+    // Populate summary content
+    populateSummaryContent();
+
+    // Trigger confetti effect
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
+
+function populateSummaryContent() {
+    const summaryContent = document.getElementById('summary-content');
+    const programList = document.getElementById('program-list');
+
+    // Clear existing content
+    summaryContent.innerHTML = '';
+    
+    // Add title
+    const title = document.createElement('h2');
+    title.textContent = 'Eligible Programs Summary';
+    title.className = 'text-2xl font-bold text-white mb-4';
+    summaryContent.appendChild(title);
+
+    // Add program list
+    const programs = Array.from(programList.children);
+    if (programs.length > 0) {
+        const ul = document.createElement('ul');
+        ul.className = 'space-y-2';
+        programs.forEach(program => {
+            const li = document.createElement('li');
+            li.textContent = program.textContent;
+            li.className = 'text-white';
+            ul.appendChild(li);
+        });
+        summaryContent.appendChild(ul);
+    } else {
+        const noPrograms = document.createElement('p');
+        noPrograms.textContent = 'No eligible programs found.';
+        noPrograms.className = 'text-white';
+        summaryContent.appendChild(noPrograms);
+    }
+
+    // Add a button to view detailed sidebar
+    const viewDetailsButton = document.createElement('button');
+    viewDetailsButton.textContent = 'View Detailed Programs';
+    viewDetailsButton.className = 'mt-4 bg-teal-500 hover:bg-teal-400 text-white px-4 py-2 rounded';
+    viewDetailsButton.onclick = () => {
+        const sidebar = document.getElementById('program-sidebar');
+        sidebar.style.width = '300px';
+    };
+    summaryContent.appendChild(viewDetailsButton);
 }
 
 // Function to animate number change with slot machine effect
@@ -196,18 +260,20 @@ export async function selectOption(question, option) {
                 if (wasSelected) {
                     userResponses[question.id] = [];
                 } else {
-                    // Add the marker and update all option buttons
-                    userResponses[question.id] = [allValue];
+                    // Add all option values including 'all', but excluding 'none'
+                    userResponses[question.id] = [allValue, ...question.options
+                        .map(opt => opt.value)
+                        .filter(val => val !== noneValue && val !== allValue)];
                     // Update all option buttons except 'none'
                     const optionsContainer = document.getElementById('options-container');
                     optionsContainer.querySelectorAll('button').forEach(button => {
-                        if (button.dataset.value !== 'none') {
+                        if (button.dataset.value !== noneValue) {
                             button.classList.add('bg-teal-500');
                             button.classList.remove('bg-white');
                         }
                     });
                 }
-                debugLog(`[QUESTIONNAIRE] Toggled All options for ${question.id}`);
+                debugLog(`[QUESTIONNAIRE] Toggled All options for ${question.id}`, userResponses[question.id]);
             } else if (isQ3 && option.value === noneValue) {
                 // For Q3 "None", clear all selections and add 'none'
                 userResponses[question.id] = ['none'];
@@ -279,22 +345,30 @@ export async function selectOption(question, option) {
             zipcode: zipcode
         };
 
-        // Special handling for Q3 and Q10 query data
-        if (question.id === 'Q3' || question.id === 'Q10') {
-            const isQ3 = question.id === 'Q3';
-            const allValue = isQ3 ? 'all' : 'h';
-            const noneValue = isQ3 ? 'none' : null;
+        // Special handling for Q3 query data
+        if (question.id === 'Q3') {
+            const allValue = 'all';
+            const noneValue = 'none';
 
-            if (queryData[question.id]?.includes(allValue)) {
-                // Remove field entirely for "All options"
+            if (queryData[question.id]?.length === question.options.length - 2) {
+                // If all options except 'all' and 'none' are selected, treat it as "All options"
                 delete queryData[question.id];
-            } else if (isQ3 && queryData[question.id]?.includes(noneValue)) {
-                // Send empty array for "None" (Q3 only)
+            } else if (queryData[question.id]?.includes(noneValue)) {
+                // Send empty array for "None"
                 queryData[question.id] = [];
             } else if (queryData[question.id]) {
                 // Remove special values from responses if present
                 queryData[question.id] = queryData[question.id]
-                    .filter(val => val !== allValue && (!noneValue || val !== noneValue));
+                    .filter(val => val !== allValue && val !== noneValue);
+            }
+        } else if (question.id === 'Q10') {
+            // Special handling for Q10
+            if (queryData[question.id]) {
+                // Ensure 'h' is included if present, along with all other options
+                if (queryData[question.id].includes('h')) {
+                    queryData[question.id] = ['h', 'a', 'b', 'c', 'd', 'e', 'f', 'g'];
+                }
+                // If 'h' is not selected, keep only the selected options (no filtering needed)
             }
         }
 
