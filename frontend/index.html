@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <!-- Fixed Logo at Top -->
@@ -118,6 +119,14 @@
     </div>
 
     <script type="module" src="js/main.js"></script>
+
+    <!-- Summary Container -->
+    <div id="summary-container" class="hidden fixed inset-0 flex items-center justify-center z-50">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-6 shadow-2xl space-y-4 w-full max-w-xl mx-4 relative">
+            <div id="summary-content"></div>
+        </div>
+    </div>
 
     <!-- Expandable Sidebar -->
     <div id="program-sidebar" class="hidden fixed top-0 right-0 h-full w-0 bg-white bg-opacity-10 backdrop-blur-lg transition-all duration-300 overflow-hidden" style="z-index: 1000;">

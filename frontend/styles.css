@@ -276,3 +276,40 @@ body::before {
 .hidden {
     display: none;
 }
+
+/* Summary Container Styles */
+#summary-container {
+    display: none;
+}
+
+#summary-container.active {
+    display: flex;
+}
+
+#summary-content {
+    color: white;
+}
+
+#summary-content h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+#summary-content ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#summary-content li {
+    margin-bottom: 0.5rem;
+}
+
+#summary-content button {
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+}
+
+#summary-content button:hover {
+    transform: translateY(-2px);
+}

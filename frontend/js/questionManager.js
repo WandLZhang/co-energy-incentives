@@ -1,7 +1,6 @@
 import { debugLog, checkQuestionnaireVisibility, updateOptionStyles, queryIncentives } from './utils.js';
 import { questions, conditionalQuestions } from './questions.js';
 import { updateSidebar } from './sidebar.js';
-import confetti from 'canvas-confetti';
 
 // State management
 let currentQuestionIndex = 0;
@@ -130,11 +129,15 @@ function showSummaryPage() {
     populateSummaryContent();
 
     // Trigger confetti effect
-    confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    } else {
+        console.error('Confetti function not found');
+    }
 }
 
 function populateSummaryContent() {
