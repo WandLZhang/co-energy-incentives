@@ -1,6 +1,6 @@
 import { debugLog, verifyDOMElements } from './utils.js';
 import { initializeZipSearch } from './zipSearch.js';
-import { initializeSidebar, showSidebar } from './sidebar.js';
+import { initializeSidebar } from './sidebar.js';
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
