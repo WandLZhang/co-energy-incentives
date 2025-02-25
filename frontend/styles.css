@@ -396,3 +396,30 @@ body::before {
         max-height: 80vh;
     }
 }
+
+/* Add this to styles.css */
+
+/* Narrow question card style (like Q2) */
+#question-card.narrow-card {
+    max-width: 600px; /* Same width as Q2 */
+    margin: 40px auto 0; /* Center it and add top margin */
+}
+
+/* Vertical options layout */
+.vertical-options {
+    display: flex !important; /* Override grid display */
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    padding: 0.5rem !important;
+}
+
+.vertical-options button {
+    height: auto !important;
+    min-height: 3rem !important;
+    font-size: 0.875rem !important; /* 14px */
+    padding: 0.75rem 1rem !important;
+    width: 100% !important;
+    text-align: left !important;
+    display: flex !important;
+    align-items: center !important;
+}

@@ -461,30 +461,34 @@ export function showQuestion(index) {
     optionsContainer.innerHTML = '';
             
     try {
+        // Define questions that should use narrow layout
+        const narrowQuestions = ['Q11', 'Q12', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9'];
+        
+        // Reset all layout-related classes
+        questionCard.classList.remove('max-w-7xl', 'max-w-xl', 'narrow-card', 'q2-card', 'q10-card');
+        optionsContainer.classList.remove('q3-options-grid', 'q10-options-grid', 'q13-options-grid', 
+            'space-y-3', 'vertical-options', 'px-2');
+        
         // Configure layout based on question type
-        if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
-            // Wide layout with small options for Q3, Q10, and Q13
+        if (narrowQuestions.includes(currentQuestion.id)) {
+            // Narrow layout with vertical options
+            questionCard.classList.add('narrow-card');
+            optionsContainer.classList.add('vertical-options', 'space-y-3', 'px-2');
+        } else if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
+            // Wide layout with grid options
             questionCard.classList.add('max-w-7xl');
-            questionCard.classList.remove('max-w-xl');
             const gridClass = 
                 currentQuestion.id === 'Q3' ? 'q3-options-grid' :
                 currentQuestion.id === 'Q10' ? 'q10-options-grid' : 'q13-options-grid';
             optionsContainer.classList.add(gridClass);
-            optionsContainer.classList.remove('space-y-3');
-        } else {
-            // Narrow layout with larger options for other questions
-            questionCard.classList.add('max-w-xl');
-            questionCard.classList.remove('max-w-7xl');
-            optionsContainer.classList.add('space-y-3', 'px-2');
-            optionsContainer.classList.remove('q3-options-grid');
-        }
-        
-        // Add specific question classes for Q2 and Q10
-        questionCard.classList.remove('q2-card', 'q10-card');
-        if (currentQuestion.id === 'Q2') {
+        } else if (currentQuestion.id === 'Q2') {
+            // Q2 specific layout
             questionCard.classList.add('q2-card');
-        } else if (currentQuestion.id === 'Q10') {
-            questionCard.classList.add('q10-card');
+            optionsContainer.classList.add('space-y-3', 'px-2');
+        } else {
+            // Default narrow layout
+            questionCard.classList.add('max-w-xl');
+            optionsContainer.classList.add('space-y-3', 'px-2');
         }
         
         currentQuestion.options.forEach(option => {
@@ -492,13 +496,13 @@ export function showQuestion(index) {
             button.textContent = option.text;
             button.dataset.value = option.value;
             
-            // Add base classes
-            const baseClasses = [
+            // Define base classes based on question type
+            let baseClasses = [
                 'text-left',
                 'transition-all',
                 'duration-300',
                 'ease-in-out',
-                'mt-4'  // Added explicit margin-top
+                'mt-4'
             ];
             
             if (currentQuestion.id === 'Q3' || currentQuestion.id === 'Q10' || currentQuestion.id === 'Q13') {
@@ -543,23 +547,19 @@ export function showQuestion(index) {
                     const noneValue = isQ3 ? 'none' : null;
 
                     if (option.value === allValue) {
-                        // "All options" is selected if marker is in responses
                         if (responses.includes(allValue)) {
                             button.classList.add('bg-teal-500');
                             button.classList.remove('bg-white');
                         }
                     } else if (isQ3 && option.value === noneValue) {
-                        // "None" is selected if marker is in responses (Q3 only)
                         if (responses.includes(noneValue)) {
                             button.classList.add('bg-teal-500');
                             button.classList.remove('bg-white');
                         }
                     } else if (responses.includes(allValue)) {
-                        // All regular options are selected when "All options" is selected
                         button.classList.add('bg-teal-500');
                         button.classList.remove('bg-white');
                     } else if (responses.includes(option.value)) {
-                        // Show option as selected if it's in responses
                         button.classList.add('bg-teal-500');
                         button.classList.remove('bg-white');
                     }
