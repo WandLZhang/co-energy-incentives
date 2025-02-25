@@ -220,10 +220,10 @@ function updateResultsDisplay(data) {
     const resultsDiv = document.getElementById('results-summary');
     const opportunitiesCount = document.getElementById('opportunities-count');
     const totalPotential = document.getElementById('total-potential');
-    
+
     if (data && resultsDiv && opportunitiesCount && totalPotential) {
         resultsDiv.classList.remove('hidden');
-        
+
         // Animate the number changes
         animateNumberChange(opportunitiesCount, data.opportunities_count);
         animateNumberChange(totalPotential, data.total_potential.toLocaleString(), '$');

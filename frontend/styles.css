@@ -220,8 +220,8 @@ body::before {
     transition: all 0.3s ease;
     width: 90%; /* Use width instead of transform scale */
     margin: 0 auto; /* Center the element */
-    position: relative;
-    z-index: 10; /* Ensure it stays above question content */
+    position: fixed;
+    z-index: 60; /* Ensure it stays above question content */
 }
 
 #results-summary .bg-white {
