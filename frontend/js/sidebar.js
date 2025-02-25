@@ -26,6 +26,16 @@ function populateSidebar(programs) {
     });
 }
 
+export function showSidebar() {
+    const sidebar = document.getElementById('program-sidebar');
+    const toggleButton = document.getElementById('sidebar-toggle');
+    
+    if (sidebar && toggleButton) {
+        sidebar.classList.remove('hidden');
+        toggleButton.classList.remove('hidden');
+    }
+}
+
 export function initializeSidebar() {
     const sidebar = document.getElementById('program-sidebar');
     const toggleButton = document.getElementById('sidebar-toggle');
@@ -38,6 +48,7 @@ export function initializeSidebar() {
 }
 
 export function updateSidebar(results, userResponses) {
+    showSidebar(); // Show the sidebar when updating
     if (!results || !results.programs) return;
     populateSidebar(results.programs);
 }

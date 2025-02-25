@@ -272,3 +272,7 @@ body::before {
     background: rgba(56, 178, 172, 0.9);
     backdrop-filter: blur(8px);
 }
+
+.hidden {
+    display: none;
+}
