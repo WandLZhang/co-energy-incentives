@@ -5,6 +5,34 @@ import { updateSidebar } from './sidebar.js';
 // State management
 let currentQuestionIndex = 0;
 export const userResponses = {};
+// Cache for the question sequence
+let questionSequence = null;
+
+// Build the complete sequence of questions based on user responses
+function buildQuestionSequence() {
+    debugLog('[QUESTIONNAIRE] Building question sequence based on user responses');
+    
+    // Start with base questions
+    const sequence = [...questions];
+    
+    // Find the position to insert conditional questions (after Q3)
+    const insertPosition = sequence.findIndex(q => q.id === 'Q3') + 1;
+    
+    // Track how many conditional questions we've inserted
+    let insertedCount = 0;
+    
+    // Check each conditional question and insert if conditions are met
+    Object.values(conditionalQuestions).forEach(condQ => {
+        if (condQ.showIf(userResponses)) {
+            debugLog(`[QUESTIONNAIRE] Including conditional question ${condQ.id} in sequence`);
+            sequence.splice(insertPosition + insertedCount, 0, condQ);
+            insertedCount++;
+        }
+    });
+    
+    debugLog(`[QUESTIONNAIRE] Final sequence has ${sequence.length} questions`);
+    return sequence;
+}
 
 // Question management functions
 export function setupQuestionnaireNavigation() {
@@ -23,33 +51,29 @@ export function setupQuestionnaireNavigation() {
 
 export function getCurrentQuestion(index) {
     debugLog(`[QUESTIONNAIRE] Getting question for index: ${index}`);
-    const baseQuestion = questions[index];
-    if (!baseQuestion) {
-        debugLog('[QUESTIONNAIRE] No base question found for index:', index);
+    
+    // Rebuild question sequence if it's not cached or on first call
+    if (!questionSequence) {
+        questionSequence = buildQuestionSequence();
+    }
+    
+    if (index < 0 || index >= questionSequence.length) {
+        debugLog(`[QUESTIONNAIRE] Index ${index} out of bounds for question sequence`);
         return null;
     }
     
-    // Check for conditional questions that should be inserted
-    for (const [key, conditionalQ] of Object.entries(conditionalQuestions)) {
-        if (conditionalQ.showIf(userResponses) && 
-            index > questions.findIndex(q => q.id === 'Q3')) {
-            debugLog('[QUESTIONNAIRE] Found conditional question:', key);
-            return conditionalQ;
-        }
-    }
-    
-    debugLog('[QUESTIONNAIRE] Returning base question:', baseQuestion.id);
-    return baseQuestion;
+    const question = questionSequence[index];
+    debugLog(`[QUESTIONNAIRE] Returning question: ${question.id} for index ${index}`);
+    return question;
 }
 
 export function getQuestionCount() {
-    let count = questions.length;
-    // Add conditional questions if they should be shown
-    for (const [key, conditionalQ] of Object.entries(conditionalQuestions)) {
-        if (conditionalQ.showIf(userResponses)) {
-            count++;
-        }
+    // Rebuild question sequence if it's not cached
+    if (!questionSequence) {
+        questionSequence = buildQuestionSequence();
     }
+    
+    const count = questionSequence.length;
     debugLog('[QUESTIONNAIRE] Total question count:', count);
     return count;
 }
@@ -338,6 +362,10 @@ export async function selectOption(question, option) {
     }
     
     updateOptionStyles(question, userResponses);
+    
+    // Important: Reset the question sequence whenever responses change
+    // as this might affect which conditional questions should be shown
+    questionSequence = null;
     
     // Query incentives with updated responses
     const zipcode = document.getElementById('zipcode').value;
